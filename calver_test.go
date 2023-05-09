@@ -41,6 +41,30 @@ func TestString(t *testing.T) {
 	}
 }
 
+func TestLayout(t *testing.T) {
+	tests := []struct {
+		layout string
+	}{
+		{"YYYY.0M.0D"},
+		{"0Y.0M.MICRO"},
+		{"0Y.0W.MICROMODIFIER"},
+		{"MAJOR.MINOR.MICRO"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.layout, func(t *testing.T) {
+			cv, err := New(tt.layout)
+			if err != nil {
+				t.Error(err)
+				return
+			}
+			got := cv.Layout()
+			if got != tt.layout {
+				t.Errorf("got %v\nwant %v", got, tt.layout)
+			}
+		})
+	}
+}
+
 func TestIn(t *testing.T) {
 	cv, err := NewWithTime("YYYY.0M.0D.MICRO", testtime)
 	if err != nil {
