@@ -19,6 +19,7 @@ func TestString(t *testing.T) {
 		{"YYYY.0M.0D", "2002.02.04"},
 		{"0Y.0M.MICRO", "02.02.3"},
 		{"0Y.0W.MICROMODIFIER", "02.06.3-dev"},
+		{"MAJOR.MINOR.MICRO", "1.2.3"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.layout, func(t *testing.T) {
@@ -48,6 +49,17 @@ func TestIn(t *testing.T) {
 	loc := time.FixedZone("UTC-2", -2*60*60)
 	if cv.String() == cv.In(loc).String() {
 		t.Errorf("got %v\n", cv.In(loc).String())
+	}
+}
+
+func TestNext(t *testing.T) {
+	cv, err := New("YYYY.0M.0D.MICRO")
+	if err != nil {
+		t.Error(err)
+	}
+	ncv, err := cv.Next()
+	if cv.String() == ncv.String() {
+		t.Errorf("got %v\n", ncv.String())
 	}
 }
 
@@ -120,6 +132,26 @@ func TestParse(t *testing.T) {
 			"YYYY.0M", "2012.12.03",
 			nil,
 			true,
+		},
+		{
+			"MAJOR.MINOR.MICRO", "1.2.3",
+			&Calver{
+				major: 1,
+				minor: 2,
+				micro: 3,
+				ts:    testtime,
+			},
+			false,
+		},
+		{
+			"MAJOR.MINOR.MICROMODIFIER", "1.2.3",
+			&Calver{
+				major: 1,
+				minor: 2,
+				micro: 3,
+				ts:    testtime,
+			},
+			false,
 		},
 	}
 	for _, tt := range tests {

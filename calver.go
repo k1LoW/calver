@@ -30,7 +30,7 @@ func NewWithTime(layout string, now time.Time) (*Calver, error) {
 		return nil, err
 	}
 	return &Calver{
-		ts:     now,
+		ts:     now, // Do not initialize (zeronize) below hour for In()
 		loc:    now.Location(),
 		layout: tokens,
 	}, nil
@@ -142,7 +142,8 @@ func (cv *Calver) Parse(value string) (*Calver, error) {
 	if week > 0 {
 		year, month, day = isoweek.StartDate(year, week)
 	}
-	ncv.ts = time.Date(year, month, day, cv.ts.In(cv.loc).Hour(), cv.ts.In(cv.loc).Minute(), cv.ts.In(cv.loc).Second(), cv.ts.In(cv.loc).Nanosecond(), cv.loc)
+	// Initialize (zeronize) hour and below when parsing
+	ncv.ts = time.Date(year, month, day, 0, 0, 0, 0, cv.loc)
 	if value != "" {
 		return nil, fmt.Errorf("failed to parse: %s", org)
 	}

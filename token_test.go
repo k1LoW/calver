@@ -51,6 +51,7 @@ func TestTokenTrimPrefix(t *testing.T) {
 		{tMINOR, "7.5", "7", ".5", false},
 		{tMICRO, "5-dev", "5", "-dev", false},
 		{tMODIFIER, "-dev", "-dev", "", false},
+		{tMICRO, "dev", "", "", true},
 		{newTokenSep("."), ".5", ".", "5", false},
 		{newTokenSep("."), "3.5", "", "", true},
 	}
