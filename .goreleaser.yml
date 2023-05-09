@@ -1,0 +1,79 @@
+before:
+  hooks:
+    - go mod download
+    - go mod tidy
+builds:
+  -
+    id: calver-darwin
+    ldflags:
+      - -s -w -X github.com/k1LoW/calver.version={{.Version}} -X github.com/k1LoW/calver.commit={{.FullCommit}} -X github.com/k1LoW/calver.date={{.Date}} -X github.com/k1LoW/calver/version.Version={{.Version}}
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    main: ./cmd/calver/main.go
+  -
+    id: calver-windows
+    ldflags:
+      - -s -w -X github.com/k1LoW/calver.version={{.Version}} -X github.com/k1LoW/calver.commit={{.FullCommit}} -X github.com/k1LoW/calver.date={{.Date}} -X github.com/k1LoW/calver/version.Version={{.Version}}
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - windows
+    goarch:
+      - amd64
+    main: ./cmd/calver/main.go
+  -
+    id: calver-linux
+    ldflags:
+      - -s -w -X github.com/k1LoW/calver.version={{.Version}} -X github.com/k1LoW/calver.commit={{.FullCommit}} -X github.com/k1LoW/calver.date={{.Date}} -X github.com/k1LoW/calver/version.Version={{.Version}}
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+    goarch:
+      - amd64
+    main: ./cmd/calver/main.go
+archives:
+  -
+    id: calver-archive
+    name_template: '{{ .ProjectName }}_v{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}'
+    format_overrides:
+      - goos: darwin
+        format: zip
+    files:
+      - LICENSE
+      - CREDITS
+      - README.md
+      - CHANGELOG.md
+    rlcp: true
+checksum:
+  name_template: 'checksums.txt'
+snapshot:
+  name_template: "{{ .Version }}-next"
+changelog:
+  skip: true
+  sort: asc
+  filters:
+    exclude:
+    - '^docs:'
+    - '^test:'
+nfpms:
+  -
+    id: calver-nfpms
+    file_name_template: "{{ .ProjectName }}_{{ .Version }}-1_{{ .Arch }}"
+    builds:
+      - calver-linux
+    homepage: https://github.com/k1LoW/calver
+    maintainer: Ken'ichiro Oyama <k1lowxb@gmail.com>
+    description: calver is a tool for manipulating calender versioning.
+    license: MIT
+    formats:
+      - deb
+      - rpm
+      - apk
+    bindir: /usr/bin
+    epoch: 1
