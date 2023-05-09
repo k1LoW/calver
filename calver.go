@@ -188,7 +188,7 @@ func (cv *Calver) Next() (*Calver, error) {
 
 func (cv *Calver) NextWithTime(now time.Time) (*Calver, error) {
 	if cv.ts.UnixNano() > now.UnixNano() {
-		return nil, fmt.Errorf("%v is older than the current setting (%v)", now, cv.ts)
+		return nil, fmt.Errorf("[%v] is older than the current setting (%v)", now.Truncate(0), cv.ts)
 	}
 	ncv := cv.clone()
 	ncv.ts = now

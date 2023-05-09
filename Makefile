@@ -1,3 +1,16 @@
+PKG = github.com/k1LoW/calver
+COMMIT = $$(git describe --tags --always)
+OSNAME=${shell uname -s}
+ifeq ($(OSNAME),Darwin)
+	DATE = $$(gdate --utc '+%Y-%m-%d_%H:%M:%S')
+else
+	DATE = $$(date --utc '+%Y-%m-%d_%H:%M:%S')
+endif
+
+export GO111MODULE=on
+
+BUILD_LDFLAGS = -X $(PKG).commit=$(COMMIT) -X $(PKG).date=$(DATE)
+
 default: test
 
 ci: depsdev test
@@ -7,6 +20,9 @@ test:
 
 lint:
 	golangci-lint run ./...
+
+build:
+	go build -ldflags="$(BUILD_LDFLAGS)" -o calver cmd/calver/main.go
 
 depsdev:
 	go install github.com/Songmu/ghch/cmd/ghch@latest
