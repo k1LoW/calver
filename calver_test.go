@@ -107,6 +107,7 @@ func TestNextWithTime(t *testing.T) {
 }
 
 func TestParse(t *testing.T) {
+	now := time.Now().UTC()
 	tests := []struct {
 		layout  string
 		value   string
@@ -139,7 +140,7 @@ func TestParse(t *testing.T) {
 				major: 1,
 				minor: 2,
 				micro: 3,
-				ts:    testtime,
+				ts:    time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC),
 			},
 			false,
 		},
@@ -149,18 +150,14 @@ func TestParse(t *testing.T) {
 				major: 1,
 				minor: 2,
 				micro: 3,
-				ts:    testtime,
+				ts:    time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC),
 			},
 			false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(fmt.Sprintf("%s/%s", tt.layout, tt.value), func(t *testing.T) {
-			cv, err := NewWithTime(tt.layout, testtime)
-			if err != nil {
-				t.Error(err)
-			}
-			got, err := cv.Parse(tt.value)
+			got, err := Parse(tt.layout, tt.value)
 			if err != nil {
 				if !tt.wantErr {
 					t.Errorf("got error: %v", err)
