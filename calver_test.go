@@ -58,6 +58,9 @@ func TestNext(t *testing.T) {
 		t.Error(err)
 	}
 	ncv, err := cv.Next()
+	if err != nil {
+		t.Error(err)
+	}
 	if cv.String() == ncv.String() {
 		t.Errorf("got %v\n", ncv.String())
 	}
