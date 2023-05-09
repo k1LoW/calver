@@ -40,6 +40,17 @@ func TestString(t *testing.T) {
 	}
 }
 
+func TestIn(t *testing.T) {
+	cv, err := NewWithTime("YYYY.0M.0D.MICRO", testtime)
+	if err != nil {
+		t.Error(err)
+	}
+	loc := time.FixedZone("UTC-2", -2*60*60)
+	if cv.String() == cv.In(loc).String() {
+		t.Errorf("got %v\n", cv.In(loc).String())
+	}
+}
+
 func TestNextWithTime(t *testing.T) {
 	tests := []struct {
 		layout  string
