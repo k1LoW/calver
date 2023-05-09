@@ -145,7 +145,7 @@ func (cv *Calver) Parse(value string) (*Calver, error) {
 	// Initialize (zeronize) hour and below when parsing
 	ncv.ts = time.Date(year, month, day, 0, 0, 0, 0, cv.loc)
 	if value != "" {
-		return nil, fmt.Errorf("failed to parse: %s", org)
+		return nil, fmt.Errorf("failed to parse '%s' using layout '%s'", org, cv.Layout())
 	}
 	return ncv, nil
 }
@@ -169,6 +169,14 @@ func (cv *Calver) String() string {
 		case tokenSep:
 			s += tt.String()
 		}
+	}
+	return s
+}
+
+func (cv *Calver) Layout() string {
+	var s string
+	for _, t := range cv.layout {
+		s += t.Token()
 	}
 	return s
 }
@@ -201,7 +209,7 @@ func (cv *Calver) NextWithTime(now time.Time) (*Calver, error) {
 
 func (cv *Calver) Major() (*Calver, error) {
 	if !contains(cv.layout, tMAJOR) {
-		return nil, errors.New("no 'MAJOR' in the layout")
+		return nil, fmt.Errorf("no 'MAJOR' in the layout '%s'", cv.Layout())
 	}
 	ncv := cv.clone()
 	ncv.major++
@@ -210,7 +218,7 @@ func (cv *Calver) Major() (*Calver, error) {
 
 func (cv *Calver) Minor() (*Calver, error) {
 	if !contains(cv.layout, tMINOR) {
-		return nil, errors.New("no 'MINOR' in the layout")
+		return nil, fmt.Errorf("no 'MINOR' in the layout '%s'", cv.Layout())
 	}
 	ncv := cv.clone()
 	ncv.minor++
@@ -219,7 +227,7 @@ func (cv *Calver) Minor() (*Calver, error) {
 
 func (cv *Calver) Micro() (*Calver, error) {
 	if !contains(cv.layout, tMICRO) {
-		return nil, errors.New("no 'MICRO' in the layout.")
+		return nil, fmt.Errorf("no 'MICRO' in the layout '%s'", cv.Layout())
 	}
 	ncv := cv.clone()
 	ncv.micro++
