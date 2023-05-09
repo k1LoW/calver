@@ -22,12 +22,11 @@ func TestString(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.layout, func(t *testing.T) {
-			cv, err := New(tt.layout)
+			cv, err := NewWithTime(tt.layout, testtime)
 			if err != nil {
 				t.Error(err)
 				return
 			}
-			cv.ts = testtime
 			cv.major = 1
 			cv.minor = 2
 			cv.micro = 3

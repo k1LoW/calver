@@ -20,14 +20,18 @@ type Calver struct {
 }
 
 func New(layout string) (*Calver, error) {
+	now := time.Now().UTC()
+	return NewWithTime(layout, now)
+}
+
+func NewWithTime(layout string, now time.Time) (*Calver, error) {
 	tokens, err := tokenizeLayout(layout)
 	if err != nil {
 		return nil, err
 	}
-	now := time.Now().UTC()
 	return &Calver{
-		ts:     time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC),
-		loc:    time.UTC,
+		ts:     time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location()),
+		loc:    now.Location(),
 		layout: tokens,
 	}, nil
 }
