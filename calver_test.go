@@ -124,7 +124,11 @@ func TestParse(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(fmt.Sprintf("%s/%s", tt.layout, tt.value), func(t *testing.T) {
-			got, err := Parse(tt.layout, tt.value)
+			cv, err := NewWithTime(tt.layout, testtime)
+			if err != nil {
+				t.Error(err)
+			}
+			got, err := cv.Parse(tt.value)
 			if err != nil {
 				if !tt.wantErr {
 					t.Errorf("got error: %v", err)

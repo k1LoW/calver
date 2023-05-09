@@ -30,7 +30,7 @@ func NewWithTime(layout string, now time.Time) (*Calver, error) {
 		return nil, err
 	}
 	return &Calver{
-		ts:     time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location()),
+		ts:     now,
 		loc:    now.Location(),
 		layout: tokens,
 	}, nil
