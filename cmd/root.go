@@ -28,6 +28,7 @@ import (
 	"strings"
 
 	"github.com/k1LoW/calver"
+	"github.com/k1LoW/calver/version"
 	"github.com/mattn/go-isatty"
 	"github.com/spf13/cobra"
 )
@@ -42,6 +43,7 @@ var rootCmd = &cobra.Command{
 	Short:        "calver is a tool for manipulating calender versioning",
 	Long:         `calver is a tool for manipulating calender versioning.`,
 	SilenceUsage: true,
+	Version:      version.Version,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		cv, err := calver.New(layout)
 		if err != nil {
