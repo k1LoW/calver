@@ -31,9 +31,9 @@ Tue May  9 13:04:09 UTC 2023
 $ calver --layout YY.0M.MICRO
 23.5.0
 $ calver --layout YY.0M.MICRO --next
+23.5.0
+$ calver --layout YY.0M.MICRO | calver --layout YY.0M.MICRO --next
 23.5.1
-$ calver --layout YY.0M.MICRO --next | calver --layout YY.0M.MICRO --next
-23.5.2
 ```
 
 ## Install
