@@ -24,7 +24,7 @@ func TestTokenCal(t *testing.T) {
 		{t0D, "04"},
 	}
 	for _, tt := range tests {
-		t.Run(tt.token.Token(), func(t *testing.T) {
+		t.Run(tt.token.token(), func(t *testing.T) {
 			got := tt.token.timeToString(testtime)
 			if got != tt.want {
 				t.Errorf("got %v\nwant %v", got, tt.want)
@@ -33,7 +33,7 @@ func TestTokenCal(t *testing.T) {
 	}
 }
 
-func TestTokenTrimPrefix(t *testing.T) {
+func TestTokentrimPrefix(t *testing.T) {
 	tests := []struct {
 		token      token
 		value      string
@@ -56,8 +56,8 @@ func TestTokenTrimPrefix(t *testing.T) {
 		{newTokenSep("."), "3.5", "", "", true},
 	}
 	for _, tt := range tests {
-		t.Run(fmt.Sprintf("%s/%s", tt.token.Token(), tt.value), func(t *testing.T) {
-			gotPrefix, gotTrimed, gotErr := tt.token.TrimPrefix(tt.value)
+		t.Run(fmt.Sprintf("%s/%s", tt.token.token(), tt.value), func(t *testing.T) {
+			gotPrefix, gotTrimed, gotErr := tt.token.trimPrefix(tt.value)
 			if gotPrefix != tt.wantPrefix {
 				t.Errorf("got %v\nwant %v", gotPrefix, tt.wantPrefix)
 			}
@@ -79,13 +79,13 @@ func TestTokenizeLayout(t *testing.T) {
 	}{
 		{"YY", []token{tYY}, false},
 		{"YYYY", []token{tYYYY}, false},
-		{"vYY", []token{tokenSep{token: "v"}, tYY}, false},
-		{"YYv", []token{tYY, tokenSep{token: "v"}}, false},
-		{"YY.0D", []token{tYY, tokenSep{token: "."}, t0D}, false},
+		{"vYY", []token{newTokenSep("v"), tYY}, false},
+		{"YYv", []token{tYY, newTokenSep("v")}, false},
+		{"YY.0D", []token{tYY, newTokenSep("."), t0D}, false},
 		{"YY0D", []token{tYY, t0D}, false},
-		{"YY.0D.MICRO", []token{tYY, tokenSep{token: "."}, t0D, tokenSep{token: "."}, tMICRO}, false},
-		{"YYYY.0M.MICRO", []token{tYYYY, tokenSep{token: "."}, t0M, tokenSep{token: "."}, tMICRO}, false},
-		{"YYY", []token{tYY, tokenSep{token: "Y"}}, false},
+		{"YY.0D.MICRO", []token{tYY, newTokenSep("."), t0D, newTokenSep("."), tMICRO}, false},
+		{"YYYY.0M.MICRO", []token{tYYYY, newTokenSep("."), t0M, newTokenSep("."), tMICRO}, false},
+		{"YYY", []token{tYY, newTokenSep("Y")}, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.layout, func(t *testing.T) {
