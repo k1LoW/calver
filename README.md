@@ -35,3 +35,52 @@ $ calver --layout YY.0M.MICRO --next
 $ calver --layout YY.0M.MICRO --next | calver --layout YY.0M.MICRO --next
 23.5.2
 ```
+
+## Install
+
+### As a package
+
+```console
+$ go get github.com/k1LoW/calver
+```
+
+### As a tool
+
+**deb:**
+
+``` console
+$ export CALVER_VERSION=X.X.X
+$ curl -o calver.deb -L https://github.com/k1LoW/calver/releases/download/v$CALVER_VERSION/calver_$CALVER_VERSION-1_amd64.deb
+$ dpkg -i calver.deb
+```
+
+**RPM:**
+
+``` console
+$ export CALVER_VERSION=X.X.X
+$ yum install https://github.com/k1LoW/calver/releases/download/v$CALVER_VERSION/calver_$CALVER_VERSION-1_amd64.rpm
+```
+
+**apk:**
+
+``` console
+$ export CALVER_VERSION=X.X.X
+$ curl -o calver.apk -L https://github.com/k1LoW/calver/releases/download/v$CALVER_VERSION/calver_$CALVER_VERSION-1_amd64.apk
+$ apk add calver.apk
+```
+
+**homebrew tap:**
+
+```console
+$ brew install k1LoW/tap/calver
+```
+
+**manually:**
+
+Download binary from [releases page](https://github.com/k1LoW/calver/releases)
+
+**go install:**
+
+```console
+$ go install github.com/k1LoW/calver/cmd/calver@latest
+```
