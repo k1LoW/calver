@@ -1,4 +1,4 @@
-# calver
+# calver [![CI](https://github.com/k1LoW/calver/actions/workflows/ci.yml/badge.svg)](https://github.com/k1LoW/calver/actions/workflows/ci.yml) [![Go Reference](https://pkg.go.dev/badge/github.com/k1LoW/calver.svg)](https://pkg.go.dev/github.com/k1LoW/calver) ![Coverage](https://raw.githubusercontent.com/k1LoW/octocovs/main/badges/k1LoW/calver/coverage.svg) ![Code to Test Ratio](https://raw.githubusercontent.com/k1LoW/octocovs/main/badges/k1LoW/calver/ratio.svg)
 
 `calver` is a package/tool provides the ability to work with [Calendar Versioning](https://calver.org/) in Go.
 
