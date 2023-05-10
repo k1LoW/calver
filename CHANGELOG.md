@@ -1,5 +1,8 @@
 # Changelog
 
+## [v0.4.0](https://github.com/k1LoW/calver/compare/v0.3.0...v0.4.0) - 2023-05-10
+- The `--next` option is only active if there is a version to parse by @k1LoW in https://github.com/k1LoW/calver/pull/10
+
 ## [v0.3.0](https://github.com/k1LoW/calver/compare/v0.2.0...v0.3.0) - 2023-05-10
 - Unexport some functions by @k1LoW in https://github.com/k1LoW/calver/pull/8
 
