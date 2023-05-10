@@ -183,7 +183,7 @@ func (cv *Calver) String() string {
 func (cv *Calver) Layout() string {
 	var s string
 	for _, t := range cv.layout {
-		s += t.Token()
+		s += t.token()
 	}
 	return s
 }
@@ -267,7 +267,7 @@ func (cv *Calver) clone() *Calver {
 
 func contains(layout []token, t token) bool {
 	for _, tt := range layout {
-		if tt.Token() == t.Token() {
+		if tt.token() == t.token() {
 			return true
 		}
 	}

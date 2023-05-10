@@ -8,7 +8,7 @@ import (
 )
 
 type token interface {
-	Token() string
+	token() string
 	trimPrefix(value string) (prefix string, trimed string, err error)
 }
 
@@ -19,18 +19,18 @@ var (
 )
 
 type tokenCal struct {
-	token        string
+	t            string
 	timeToString func(time.Time) string
 }
 
-func (t tokenCal) Token() string {
-	return t.token
+func (t tokenCal) token() string {
+	return t.t
 }
 
 func (t tokenCal) trimPrefix(value string) (string, string, error) {
-	l := len(t.token)
+	l := len(t.t)
 	var expr string
-	if l == 2 && !strings.HasPrefix(t.token, "0") {
+	if l == 2 && !strings.HasPrefix(t.t, "0") {
 		expr = "^([1-9][0-9]?)(.*)$"
 	} else {
 		expr = fmt.Sprintf("^([0-9]{%d})(.*)$", l)
@@ -38,77 +38,77 @@ func (t tokenCal) trimPrefix(value string) (string, string, error) {
 	re := regexp.MustCompile(expr)
 	matches := re.FindAllStringSubmatch(value, -1)
 	if len(matches) == 0 {
-		return "", "", fmt.Errorf("could not get the value of token '%s' from '%s'", t.token, value)
+		return "", "", fmt.Errorf("could not get the value of token '%s' from '%s'", t.t, value)
 	}
 	return matches[0][1], matches[0][2], nil
 }
 
 type tokenVer struct {
-	token       string
+	t           string
 	verToString func(int, int, int, string) string
 }
 
-func (t tokenVer) Token() string {
-	return t.token
+func (t tokenVer) token() string {
+	return t.t
 }
 
 func (t tokenVer) trimPrefix(value string) (string, string, error) {
-	if t.token == "MODIFIER" {
+	if t.t == "MODIFIER" {
 		return value, "", nil
 	}
 	expr := "^([0-9]+)(.*)$"
 	re := regexp.MustCompile(expr)
 	matches := re.FindAllStringSubmatch(value, -1)
 	if len(matches) == 0 {
-		return "", "", fmt.Errorf("could not get the value of token '%s' from '%s'", t.token, value)
+		return "", "", fmt.Errorf("could not get the value of token '%s' from '%s'", t.t, value)
 	}
 	return matches[0][1], matches[0][2], nil
 }
 
 type tokenSep struct {
-	token string
+	t string
 }
 
 func newTokenSep(token string) tokenSep {
-	return tokenSep{token: token}
+	return tokenSep{t: token}
 }
 
-func (t tokenSep) Token() string {
-	return t.token
+func (t tokenSep) token() string {
+	return t.t
 }
 
 func (t tokenSep) trimPrefix(value string) (string, string, error) {
-	if !strings.HasPrefix(value, t.token) {
-		return "", "", fmt.Errorf("could not get the value of token '%s' from '%s'", t.token, value)
+	if !strings.HasPrefix(value, t.t) {
+		return "", "", fmt.Errorf("could not get the value of token '%s' from '%s'", t.t, value)
 	}
-	return t.token, strings.TrimPrefix(value, t.token), nil
+	return t.t, strings.TrimPrefix(value, t.t), nil
 }
 
 func (t tokenSep) String() string {
-	return t.token
+	return t.t
 }
 
 var (
-	tYYYY = tokenCal{token: "YYYY", timeToString: func(t time.Time) string { return t.Format("2006") }}
-	tYY   = tokenCal{token: "YY", timeToString: func(t time.Time) string { return strings.TrimPrefix(t.Format("06"), "0") }}
-	t0Y   = tokenCal{token: "0Y", timeToString: func(t time.Time) string { return t.Format("06") }}
-	tMM   = tokenCal{token: "MM", timeToString: func(t time.Time) string { return t.Format("1") }}
-	t0M   = tokenCal{token: "0M", timeToString: func(t time.Time) string { return t.Format("01") }}
-	tWW   = tokenCal{token: "WW", timeToString: func(t time.Time) string {
+	tYYYY = tokenCal{t: "YYYY", timeToString: func(t time.Time) string { return t.Format("2006") }}
+	tYY   = tokenCal{t: "YY", timeToString: func(t time.Time) string { return strings.TrimPrefix(t.Format("06"), "0") }}
+	t0Y   = tokenCal{t: "0Y", timeToString: func(t time.Time) string { return t.Format("06") }}
+	tMM   = tokenCal{t: "MM", timeToString: func(t time.Time) string { return t.Format("1") }}
+	t0M   = tokenCal{t: "0M", timeToString: func(t time.Time) string { return t.Format("01") }}
+	tWW   = tokenCal{t: "WW", timeToString: func(t time.Time) string {
 		_, w := t.ISOWeek()
 		return fmt.Sprintf("%d", w)
 	}}
-	t0W = tokenCal{token: "0W", timeToString: func(t time.Time) string {
+	t0W = tokenCal{t: "0W", timeToString: func(t time.Time) string {
 		_, w := t.ISOWeek()
 		return fmt.Sprintf("%02d", w)
 	}}
-	tDD = tokenCal{token: "DD", timeToString: func(t time.Time) string { return t.Format("2") }}
-	t0D = tokenCal{token: "0D", timeToString: func(t time.Time) string { return t.Format("02") }}
+	tDD = tokenCal{t: "DD", timeToString: func(t time.Time) string { return t.Format("2") }}
+	t0D = tokenCal{t: "0D", timeToString: func(t time.Time) string { return t.Format("02") }}
 
-	tMAJOR    = tokenVer{token: "MAJOR", verToString: func(major, minor, micro int, modifier string) string { return fmt.Sprintf("%d", major) }}
-	tMINOR    = tokenVer{token: "MINOR", verToString: func(major, minor, micro int, modifier string) string { return fmt.Sprintf("%d", minor) }}
-	tMICRO    = tokenVer{token: "MICRO", verToString: func(major, minor, micro int, modifier string) string { return fmt.Sprintf("%d", micro) }}
-	tMODIFIER = tokenVer{token: "MODIFIER", verToString: func(major, minor, micro int, modifier string) string { return modifier }}
+	tMAJOR    = tokenVer{t: "MAJOR", verToString: func(major, minor, micro int, modifier string) string { return fmt.Sprintf("%d", major) }}
+	tMINOR    = tokenVer{t: "MINOR", verToString: func(major, minor, micro int, modifier string) string { return fmt.Sprintf("%d", minor) }}
+	tMICRO    = tokenVer{t: "MICRO", verToString: func(major, minor, micro int, modifier string) string { return fmt.Sprintf("%d", micro) }}
+	tMODIFIER = tokenVer{t: "MODIFIER", verToString: func(major, minor, micro int, modifier string) string { return modifier }}
 )
 
 var builtinTokens = []token{
@@ -139,13 +139,13 @@ func tokenizeLayout(layout string) ([]token, error) {
 		var prevMatch token
 		prefixMatches := []token{}
 		for _, t := range builtinTokens {
-			if strings.HasPrefix(t.Token(), v) {
+			if strings.HasPrefix(t.token(), v) {
 				prefixMatches = append(prefixMatches, t)
 			}
-			if t.Token() == v {
+			if t.token() == v {
 				match = t
 			}
-			if t.Token() == prev {
+			if t.token() == prev {
 				prevMatch = t
 			}
 		}
