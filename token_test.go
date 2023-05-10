@@ -33,7 +33,7 @@ func TestTokenCal(t *testing.T) {
 	}
 }
 
-func TestTokenTrimPrefix(t *testing.T) {
+func TestTokentrimPrefix(t *testing.T) {
 	tests := []struct {
 		token      token
 		value      string
@@ -57,7 +57,7 @@ func TestTokenTrimPrefix(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(fmt.Sprintf("%s/%s", tt.token.Token(), tt.value), func(t *testing.T) {
-			gotPrefix, gotTrimed, gotErr := tt.token.TrimPrefix(tt.value)
+			gotPrefix, gotTrimed, gotErr := tt.token.trimPrefix(tt.value)
 			if gotPrefix != tt.wantPrefix {
 				t.Errorf("got %v\nwant %v", gotPrefix, tt.wantPrefix)
 			}

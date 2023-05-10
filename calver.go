@@ -61,7 +61,7 @@ func (cv *Calver) Parse(value string) (*Calver, error) {
 	for _, t := range cv.layout {
 		switch {
 		case contains([]token{tYYYY, tYY, t0Y}, t):
-			p, value, err = t.TrimPrefix(value)
+			p, value, err = t.trimPrefix(value)
 			if err != nil {
 				return nil, err
 			}
@@ -73,7 +73,7 @@ func (cv *Calver) Parse(value string) (*Calver, error) {
 				year += 2000
 			}
 		case contains([]token{tMM, t0M}, t):
-			p, value, err = t.TrimPrefix(value)
+			p, value, err = t.trimPrefix(value)
 			if err != nil {
 				return nil, err
 			}
@@ -83,7 +83,7 @@ func (cv *Calver) Parse(value string) (*Calver, error) {
 			}
 			month = time.Month(m)
 		case contains([]token{tWW, t0W}, t):
-			p, value, err = t.TrimPrefix(value)
+			p, value, err = t.trimPrefix(value)
 			if err != nil {
 				return nil, err
 			}
@@ -92,7 +92,7 @@ func (cv *Calver) Parse(value string) (*Calver, error) {
 				return nil, err
 			}
 		case contains([]token{tDD, t0D}, t):
-			p, value, err = t.TrimPrefix(value)
+			p, value, err = t.trimPrefix(value)
 			if err != nil {
 				return nil, err
 			}
@@ -101,7 +101,7 @@ func (cv *Calver) Parse(value string) (*Calver, error) {
 				return nil, err
 			}
 		case contains([]token{tMAJOR}, t):
-			p, value, err = t.TrimPrefix(value)
+			p, value, err = t.trimPrefix(value)
 			if err != nil {
 				return nil, err
 			}
@@ -111,7 +111,7 @@ func (cv *Calver) Parse(value string) (*Calver, error) {
 			}
 			ncv.major = m
 		case contains([]token{tMINOR}, t):
-			p, value, err = t.TrimPrefix(value)
+			p, value, err = t.trimPrefix(value)
 			if err != nil {
 				return nil, err
 			}
@@ -121,7 +121,7 @@ func (cv *Calver) Parse(value string) (*Calver, error) {
 			}
 			ncv.minor = m
 		case contains([]token{tMICRO}, t):
-			p, value, err = t.TrimPrefix(value)
+			p, value, err = t.trimPrefix(value)
 			if err != nil {
 				return nil, err
 			}
@@ -131,13 +131,13 @@ func (cv *Calver) Parse(value string) (*Calver, error) {
 			}
 			ncv.micro = m
 		case contains([]token{tMODIFIER}, t):
-			p, value, err = t.TrimPrefix(value)
+			p, value, err = t.trimPrefix(value)
 			if err != nil {
 				return nil, err
 			}
 			ncv.modifier = p
 		default:
-			_, value, err = t.TrimPrefix(value)
+			_, value, err = t.trimPrefix(value)
 			if err != nil {
 				return nil, err
 			}

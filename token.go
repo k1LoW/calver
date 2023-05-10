@@ -9,7 +9,7 @@ import (
 
 type token interface {
 	Token() string
-	TrimPrefix(value string) (prefix string, trimed string, err error)
+	trimPrefix(value string) (prefix string, trimed string, err error)
 }
 
 var (
@@ -27,7 +27,7 @@ func (t tokenCal) Token() string {
 	return t.token
 }
 
-func (t tokenCal) TrimPrefix(value string) (string, string, error) {
+func (t tokenCal) trimPrefix(value string) (string, string, error) {
 	l := len(t.token)
 	var expr string
 	if l == 2 && !strings.HasPrefix(t.token, "0") {
@@ -52,7 +52,7 @@ func (t tokenVer) Token() string {
 	return t.token
 }
 
-func (t tokenVer) TrimPrefix(value string) (string, string, error) {
+func (t tokenVer) trimPrefix(value string) (string, string, error) {
 	if t.token == "MODIFIER" {
 		return value, "", nil
 	}
@@ -77,7 +77,7 @@ func (t tokenSep) Token() string {
 	return t.token
 }
 
-func (t tokenSep) TrimPrefix(value string) (string, string, error) {
+func (t tokenSep) trimPrefix(value string) (string, string, error) {
 	if !strings.HasPrefix(value, t.token) {
 		return "", "", fmt.Errorf("could not get the value of token '%s' from '%s'", t.token, value)
 	}
