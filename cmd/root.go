@@ -64,11 +64,11 @@ var rootCmd = &cobra.Command{
 			if err != nil {
 				return err
 			}
-		}
-		if next {
-			cv, err = cv.Next()
-			if err != nil {
-				return err
+			if next {
+				cv, err = cv.Next()
+				if err != nil {
+					return err
+				}
 			}
 		}
 		fmt.Println(cv.String())
@@ -85,5 +85,5 @@ func Execute() {
 
 func init() {
 	rootCmd.Flags().StringVarP(&layout, "layout", "l", "YY.0M.MICRO", "version layout")
-	rootCmd.Flags().BoolVarP(&next, "next", "n", false, "show next version")
+	rootCmd.Flags().BoolVarP(&next, "next", "n", false, "show next version of parsed version")
 }
