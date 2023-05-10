@@ -19,11 +19,13 @@ type Calver struct {
 	layout   []token
 }
 
+// New returns *Calver at the current time.
 func New(layout string) (*Calver, error) {
 	now := time.Now().UTC()
 	return NewWithTime(layout, now)
 }
 
+// NewWithTime returns *Calver at the given time.
 func NewWithTime(layout string, now time.Time) (*Calver, error) {
 	tokens, err := tokenizeLayout(layout)
 	if err != nil {
@@ -36,12 +38,14 @@ func NewWithTime(layout string, now time.Time) (*Calver, error) {
 	}, nil
 }
 
+// In sets *time.Location.
 func (cv *Calver) In(loc *time.Location) *Calver {
 	ncv := cv.clone()
 	ncv.loc = loc
 	return ncv
 }
 
+// Parse version string using layout.
 func (cv *Calver) Parse(value string) (*Calver, error) {
 	org := value
 	ncv := cv.clone()
@@ -150,6 +154,7 @@ func (cv *Calver) Parse(value string) (*Calver, error) {
 	return ncv, nil
 }
 
+// Parse version string using layout at the current time.
 func Parse(layout, value string) (*Calver, error) {
 	cv, err := New(layout)
 	if err != nil {
@@ -158,6 +163,7 @@ func Parse(layout, value string) (*Calver, error) {
 	return cv.Parse(value)
 }
 
+// String returns version string.
 func (cv *Calver) String() string {
 	var s string
 	for _, t := range cv.layout {
@@ -173,6 +179,7 @@ func (cv *Calver) String() string {
 	return s
 }
 
+// Layout returns version layout.
 func (cv *Calver) Layout() string {
 	var s string
 	for _, t := range cv.layout {
@@ -181,11 +188,13 @@ func (cv *Calver) Layout() string {
 	return s
 }
 
+// Next returns next version *Calver at the current time.
 func (cv *Calver) Next() (*Calver, error) {
 	now := time.Now()
 	return cv.NextWithTime(now)
 }
 
+// Next returns next version *Calver at the given time.
 func (cv *Calver) NextWithTime(now time.Time) (*Calver, error) {
 	if cv.ts.UnixNano() > now.UnixNano() {
 		return nil, fmt.Errorf("[%v] is older than the current setting (%v)", now.Truncate(0), cv.ts)
@@ -207,6 +216,7 @@ func (cv *Calver) NextWithTime(now time.Time) (*Calver, error) {
 	return nil, errors.New("failed to bump up version")
 }
 
+// Major returns next major version *Calver.
 func (cv *Calver) Major() (*Calver, error) {
 	if !contains(cv.layout, tMAJOR) {
 		return nil, fmt.Errorf("no 'MAJOR' in the layout '%s'", cv.Layout())
@@ -216,6 +226,7 @@ func (cv *Calver) Major() (*Calver, error) {
 	return ncv, nil
 }
 
+// Minor returns next minor version *Calver.
 func (cv *Calver) Minor() (*Calver, error) {
 	if !contains(cv.layout, tMINOR) {
 		return nil, fmt.Errorf("no 'MINOR' in the layout '%s'", cv.Layout())
@@ -225,6 +236,7 @@ func (cv *Calver) Minor() (*Calver, error) {
 	return ncv, nil
 }
 
+// Micro returns next micro version *Calver.
 func (cv *Calver) Micro() (*Calver, error) {
 	if !contains(cv.layout, tMICRO) {
 		return nil, fmt.Errorf("no 'MICRO' in the layout '%s'", cv.Layout())
@@ -234,6 +246,7 @@ func (cv *Calver) Micro() (*Calver, error) {
 	return ncv, nil
 }
 
+// Modifier returns *Calver with modifier.
 func (cv *Calver) Modifier(m string) *Calver {
 	ncv := cv.clone()
 	ncv.modifier = m
