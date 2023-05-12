@@ -22,6 +22,7 @@ THE SOFTWARE.
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -49,27 +50,44 @@ var rootCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		var value string
-		if len(args) > 0 {
-			value = args[0]
-		} else if !isatty.IsTerminal(os.Stdin.Fd()) {
+		var versions []string
+		switch {
+		case len(args) > 0:
+			versions = args
+		case !isatty.IsTerminal(os.Stdin.Fd()):
 			stdin, err := io.ReadAll(os.Stdin)
 			if err != nil {
 				return err
 			}
-			value = strings.TrimSpace(string(stdin))
+			lines := strings.Split(strings.Trim(string(stdin), " \n"), "\n")
+			for _, l := range lines {
+				versions = append(versions, strings.Split(l, " ")...)
+			}
 		}
-		if value != "" {
-			cv, err = cv.Parse(value)
+
+		var errs error
+		if len(versions) > 0 {
+			cvs := calver.Calvers{}
+			for _, v := range versions {
+				ccv, err := cv.Parse(v)
+				if err != nil {
+					errs = errors.Join(errs, err)
+					continue
+				}
+				cvs = append(cvs, ccv)
+			}
+			latest, err := cvs.Latest()
 			if err != nil {
-				return err
+				errs = errors.Join(err, errs)
+				return errs
 			}
 			if next {
-				cv, err = cv.Next()
+				latest, err = latest.Next()
 				if err != nil {
 					return err
 				}
 			}
+			cv = latest
 		}
 		fmt.Println(cv.String())
 		return nil

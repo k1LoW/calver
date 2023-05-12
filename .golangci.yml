@@ -1,6 +1,7 @@
 linters:
   enable:
     - gosec
+    - errorlint
   fast: false
 linters-settings:
   staticcheck:
