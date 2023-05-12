@@ -1,5 +1,10 @@
 # Changelog
 
+## [v0.5.0](https://github.com/k1LoW/calver/compare/v0.4.0...v0.5.0) - 2023-05-12
+- Add Sort() and Latest() by @k1LoW in https://github.com/k1LoW/calver/pull/12
+- Parse multi versions and use latest by @k1LoW in https://github.com/k1LoW/calver/pull/13
+- Add `--major`, `--minor`, and `--micro` option by @k1LoW in https://github.com/k1LoW/calver/pull/14
+
 ## [v0.4.0](https://github.com/k1LoW/calver/compare/v0.3.0...v0.4.0) - 2023-05-10
 - The `--next` option is only active if there is a version to parse by @k1LoW in https://github.com/k1LoW/calver/pull/10
 
