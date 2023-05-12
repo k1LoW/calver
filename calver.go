@@ -3,10 +3,17 @@ package calver
 import (
 	"errors"
 	"fmt"
+	"sort"
 	"strconv"
 	"time"
 
 	"github.com/snabb/isoweek"
+)
+
+const (
+	parsedDefaultYear  = 2000
+	parsedDefaultMonth = time.Month(1)
+	parsedDefaultDay   = 1
 )
 
 type Calver struct {
@@ -18,6 +25,10 @@ type Calver struct {
 	loc      *time.Location
 	layout   []token
 }
+
+type Calvers []*Calver
+
+var ErrNoVersions = errors.New("no versions")
 
 // New returns *Calver at the current time.
 func New(layout string) (*Calver, error) {
@@ -49,9 +60,9 @@ func (cv *Calver) In(loc *time.Location) *Calver {
 func (cv *Calver) Parse(value string) (*Calver, error) {
 	org := value
 	ncv := cv.clone()
-	year := ncv.ts.In(ncv.loc).Year()
-	month := ncv.ts.In(ncv.loc).Month()
-	day := ncv.ts.In(ncv.loc).Day()
+	year := parsedDefaultYear
+	month := parsedDefaultMonth
+	day := parsedDefaultDay
 
 	var (
 		p    string
@@ -263,6 +274,29 @@ func (cv *Calver) clone() *Calver {
 		loc:      cv.loc,
 		layout:   cv.layout,
 	}
+}
+
+func (cvs Calvers) Sort() {
+	sort.SliceStable(cvs, func(i, j int) bool {
+		if cvs[i].ts.UnixNano() != cvs[j].ts.UnixNano() {
+			return cvs[i].ts.UnixNano() > cvs[j].ts.UnixNano()
+		}
+		if cvs[i].major != cvs[j].major {
+			return cvs[i].major > cvs[j].major
+		}
+		if cvs[i].minor != cvs[j].minor {
+			return cvs[i].minor > cvs[j].minor
+		}
+		return cvs[i].micro > cvs[j].micro
+	})
+}
+
+func (cvs Calvers) Latest() (*Calver, error) {
+	if len(cvs) == 0 {
+		return nil, ErrNoVersions
+	}
+	cvs.Sort()
+	return cvs[0], nil
 }
 
 func contains(layout []token, t token) bool {
