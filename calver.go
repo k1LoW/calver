@@ -57,16 +57,20 @@ func (cv *Calver) In(loc *time.Location) *Calver {
 }
 
 // Parse version string using layout.
-func (cv *Calver) Parse(value string) (*Calver, error) {
+func (cv *Calver) Parse(value string) (ncv *Calver, err error) {
 	org := value
-	ncv := cv.clone()
+	defer func() {
+		if err != nil {
+			err = fmt.Errorf("failed to parse '%s' using layout '%s': %w", org, cv.Layout(), err)
+		}
+	}()
+	ncv = cv.clone()
 	year := parsedDefaultYear
 	month := parsedDefaultMonth
 	day := parsedDefaultDay
 
 	var (
 		p    string
-		err  error
 		week int
 	)
 	for _, t := range cv.layout {
@@ -160,7 +164,7 @@ func (cv *Calver) Parse(value string) (*Calver, error) {
 	// Initialize (zeronize) hour and below when parsing
 	ncv.ts = time.Date(year, month, day, 0, 0, 0, 0, cv.loc)
 	if value != "" {
-		return nil, fmt.Errorf("failed to parse '%s' using layout '%s'", org, cv.Layout())
+		return nil, errors.New("there are strings that could not be parsed")
 	}
 	return ncv, nil
 }
