@@ -37,6 +37,9 @@ import (
 var (
 	layout string
 	next   bool
+	major  bool
+	minor  bool
+	micro  bool
 )
 
 var rootCmd = &cobra.Command{
@@ -65,6 +68,10 @@ var rootCmd = &cobra.Command{
 			}
 		}
 
+		if len(versions) == 0 && (next || major || minor || micro) {
+			return errors.New("--next, --major, --minor, and --micro require a version string to be parsed")
+		}
+
 		var errs error
 		if len(versions) > 0 {
 			cvs := calver.Calvers{}
@@ -76,19 +83,35 @@ var rootCmd = &cobra.Command{
 				}
 				cvs = append(cvs, ccv)
 			}
-			latest, err := cvs.Latest()
+			cv, err = cvs.Latest()
 			if err != nil {
 				errs = errors.Join(err, errs)
 				return errs
 			}
-			if next {
-				latest, err = latest.Next()
+			switch {
+			case next:
+				cv, err = cv.Next()
+				if err != nil {
+					return err
+				}
+			case major:
+				cv, err = cv.Major()
+				if err != nil {
+					return err
+				}
+			case minor:
+				cv, err = cv.Minor()
+				if err != nil {
+					return err
+				}
+			case micro:
+				cv, err = cv.Micro()
 				if err != nil {
 					return err
 				}
 			}
-			cv = latest
 		}
+
 		fmt.Println(cv.String())
 		return nil
 	},
@@ -104,4 +127,7 @@ func Execute() {
 func init() {
 	rootCmd.Flags().StringVarP(&layout, "layout", "l", "YY.0M.MICRO", "version layout")
 	rootCmd.Flags().BoolVarP(&next, "next", "n", false, "show next version of parsed version")
+	rootCmd.Flags().BoolVarP(&major, "major", "", false, "show next major version of parsed version")
+	rootCmd.Flags().BoolVarP(&minor, "minor", "", false, "show next minor version of parsed version")
+	rootCmd.Flags().BoolVarP(&micro, "micro", "", false, "show next micro version of parsed version")
 }
