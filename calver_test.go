@@ -134,7 +134,6 @@ func TestNextWithTime(t *testing.T) {
 }
 
 func TestParse(t *testing.T) {
-	now := time.Now().UTC()
 	tests := []struct {
 		layout  string
 		value   string
@@ -167,7 +166,7 @@ func TestParse(t *testing.T) {
 				major: 1,
 				minor: 2,
 				micro: 3,
-				ts:    time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC),
+				ts:    time.Date(2000, time.Month(1), 1, 0, 0, 0, 0, time.UTC),
 			},
 			false,
 		},
@@ -177,7 +176,7 @@ func TestParse(t *testing.T) {
 				major: 1,
 				minor: 2,
 				micro: 3,
-				ts:    time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC),
+				ts:    time.Date(2000, time.Month(1), 1, 0, 0, 0, 0, time.UTC),
 			},
 			false,
 		},
@@ -185,6 +184,93 @@ func TestParse(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(fmt.Sprintf("%s/%s", tt.layout, tt.value), func(t *testing.T) {
 			got, err := Parse(tt.layout, tt.value)
+			if err != nil {
+				if !tt.wantErr {
+					t.Errorf("got error: %v", err)
+				}
+				return
+			}
+			if tt.wantErr {
+				t.Error("want error")
+			}
+			opts := []cmp.Option{
+				cmp.AllowUnexported(Calver{}),
+				cmpopts.IgnoreFields(Calver{}, "layout"),
+				cmpopts.IgnoreFields(Calver{}, "loc"),
+			}
+			if diff := cmp.Diff(got, tt.want, opts...); diff != "" {
+				t.Errorf("%s", diff)
+			}
+		})
+	}
+}
+
+func TestLatest(t *testing.T) {
+	tests := []struct {
+		layout   string
+		versions []string
+		want     *Calver
+		wantErr  bool
+	}{
+		{
+			"YYYY.0M.0D",
+			[]string{"2012.12.03", "2012.12.04"},
+			&Calver{
+				major: 0,
+				minor: 0,
+				micro: 0,
+				ts:    time.Date(2012, time.Month(12), 4, 0, 0, 0, 0, time.UTC),
+			},
+			false,
+		},
+		{
+			"YYYY.0M.MICRO",
+			[]string{"2012.12.1", "2012.12.0"},
+			&Calver{
+				major: 0,
+				minor: 0,
+				micro: 1,
+				ts:    time.Date(2012, time.Month(12), 1, 0, 0, 0, 0, time.UTC),
+			},
+			false,
+		},
+		{
+			"YYYY.0M.MICRO",
+			[]string{"2012.12.1", "2012.12.20"},
+			&Calver{
+				major: 0,
+				minor: 0,
+				micro: 20,
+				ts:    time.Date(2012, time.Month(12), 1, 0, 0, 0, 0, time.UTC),
+			},
+			false,
+		},
+		{
+			"YYYY.0M.MICRO",
+			[]string{"2013.01.0", "2012.12.20"},
+			&Calver{
+				major: 0,
+				minor: 0,
+				micro: 0,
+				ts:    time.Date(2013, time.Month(1), 1, 0, 0, 0, 0, time.UTC),
+			},
+			false,
+		},
+	}
+	for i, tt := range tests {
+		t.Run(fmt.Sprintf("%d", i), func(t *testing.T) {
+			cvs := Calvers{}
+			cv, err := New(tt.layout)
+			if err != nil {
+				t.Error(err)
+			}
+			for _, v := range tt.versions {
+				ccv, err := cv.Parse(v)
+				if err == nil {
+					cvs = append(cvs, ccv)
+				}
+			}
+			got, err := cvs.Latest()
 			if err != nil {
 				if !tt.wantErr {
 					t.Errorf("got error: %v", err)
