@@ -17,13 +17,14 @@ const (
 )
 
 type Calver struct {
-	major    int
-	minor    int
-	micro    int
-	modifier string
-	ts       time.Time
-	loc      *time.Location
-	layout   []token
+	major      int
+	minor      int
+	micro      int
+	modifier   string
+	ts         time.Time
+	loc        *time.Location
+	layout     []token
+	trimSuffix bool
 }
 
 type Calvers []*Calver
@@ -116,6 +117,10 @@ func (cv *Calver) Parse(value string) (ncv *Calver, err error) {
 				return nil, err
 			}
 		case contains([]token{tMAJOR}, t):
+			if value == "" && cv.trimSuffix {
+				ncv.major = 0
+				continue
+			}
 			p, value, err = t.trimPrefix(value)
 			if err != nil {
 				return nil, err
@@ -126,6 +131,10 @@ func (cv *Calver) Parse(value string) (ncv *Calver, err error) {
 			}
 			ncv.major = m
 		case contains([]token{tMINOR}, t):
+			if value == "" && cv.trimSuffix {
+				ncv.minor = 0
+				continue
+			}
 			p, value, err = t.trimPrefix(value)
 			if err != nil {
 				return nil, err
@@ -136,6 +145,10 @@ func (cv *Calver) Parse(value string) (ncv *Calver, err error) {
 			}
 			ncv.minor = m
 		case contains([]token{tMICRO}, t):
+			if value == "" && cv.trimSuffix {
+				ncv.micro = 0
+				continue
+			}
 			p, value, err = t.trimPrefix(value)
 			if err != nil {
 				return nil, err
@@ -146,12 +159,19 @@ func (cv *Calver) Parse(value string) (ncv *Calver, err error) {
 			}
 			ncv.micro = m
 		case contains([]token{tMODIFIER}, t):
+			if value == "" && cv.trimSuffix {
+				ncv.modifier = ""
+				continue
+			}
 			p, value, err = t.trimPrefix(value)
 			if err != nil {
 				return nil, err
 			}
 			ncv.modifier = p
 		default:
+			if value == "" && cv.trimSuffix {
+				continue
+			}
 			_, value, err = t.trimPrefix(value)
 			if err != nil {
 				return nil, err
@@ -181,14 +201,25 @@ func Parse(layout, value string) (*Calver, error) {
 // String returns version string.
 func (cv *Calver) String() string {
 	var s string
-	for _, t := range cv.layout {
+	reversed := reverse(cv.layout)
+	trimable := cv.trimSuffix
+	for _, t := range reversed {
 		switch tt := t.(type) {
 		case tokenCal:
-			s += tt.timeToString(cv.ts.In(cv.loc))
+			trimable = false
+			s = tt.timeToString(cv.ts.In(cv.loc)) + s
 		case tokenVer:
-			s += tt.verToString(cv.major, cv.minor, cv.micro, cv.modifier)
+			v := tt.verToString(cv.major, cv.minor, cv.micro, cv.modifier)
+			if trimable && (v == "0" || v == "") {
+				v = ""
+			} else {
+				trimable = false
+			}
+			s = v + s
 		case tokenSep:
-			s += tt.String()
+			if !trimable {
+				s = tt.String() + s
+			}
 		}
 	}
 	return s
@@ -268,15 +299,23 @@ func (cv *Calver) Modifier(m string) *Calver {
 	return ncv
 }
 
+// TrimSuffix returns *Calver enabled/diabled to trim the trailing version of a zero value or an empty string.
+func (cv *Calver) TrimSuffix(enable bool) *Calver {
+	ncv := cv.clone()
+	ncv.trimSuffix = enable
+	return ncv
+}
+
 func (cv *Calver) clone() *Calver {
 	return &Calver{
-		major:    cv.major,
-		minor:    cv.minor,
-		micro:    cv.micro,
-		modifier: cv.modifier,
-		ts:       cv.ts,
-		loc:      cv.loc,
-		layout:   cv.layout,
+		major:      cv.major,
+		minor:      cv.minor,
+		micro:      cv.micro,
+		modifier:   cv.modifier,
+		ts:         cv.ts,
+		loc:        cv.loc,
+		layout:     cv.layout,
+		trimSuffix: cv.trimSuffix,
 	}
 }
 
@@ -316,4 +355,12 @@ func contains(layout []token, t token) bool {
 		}
 	}
 	return false
+}
+
+func reverse(layout []token) []token {
+	reversed := []token{}
+	for _, t := range layout {
+		reversed = append([]token{t}, reversed...)
+	}
+	return reversed
 }

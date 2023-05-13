@@ -35,11 +35,12 @@ import (
 )
 
 var (
-	layout string
-	next   bool
-	major  bool
-	minor  bool
-	micro  bool
+	layout     string
+	next       bool
+	major      bool
+	minor      bool
+	micro      bool
+	trimSuffix bool
 )
 
 var rootCmd = &cobra.Command{
@@ -65,6 +66,7 @@ var rootCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
+		cv = cv.TrimSuffix(trimSuffix)
 		var versions []string
 		switch {
 		case len(args) > 0:
@@ -138,4 +140,5 @@ func init() {
 	rootCmd.Flags().BoolVarP(&major, "major", "", false, "show next major version of parsed version")
 	rootCmd.Flags().BoolVarP(&minor, "minor", "", false, "show next minor version of parsed version")
 	rootCmd.Flags().BoolVarP(&micro, "micro", "", false, "show next micro version of parsed version")
+	rootCmd.Flags().BoolVarP(&trimSuffix, "trim-suffix", "", false, "trim the trailing version of a zero value or an empty string")
 }
