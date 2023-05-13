@@ -282,16 +282,22 @@ func (cv *Calver) clone() *Calver {
 
 func (cvs Calvers) Sort() {
 	sort.SliceStable(cvs, func(i, j int) bool {
-		if cvs[i].ts.UnixNano() != cvs[j].ts.UnixNano() {
+		switch {
+		case cvs[i].ts.UnixNano() != cvs[j].ts.UnixNano():
 			return cvs[i].ts.UnixNano() > cvs[j].ts.UnixNano()
-		}
-		if cvs[i].major != cvs[j].major {
+		case cvs[i].major != cvs[j].major:
 			return cvs[i].major > cvs[j].major
-		}
-		if cvs[i].minor != cvs[j].minor {
+		case cvs[i].minor != cvs[j].minor:
 			return cvs[i].minor > cvs[j].minor
+		case cvs[i].micro != cvs[j].micro:
+			return cvs[i].micro > cvs[j].micro
+		case cvs[i].modifier == "":
+			return true
+		case cvs[j].modifier == "":
+			return false
+		default:
+			return cvs[i].modifier > cvs[j].modifier
 		}
-		return cvs[i].micro > cvs[j].micro
 	})
 }
 
