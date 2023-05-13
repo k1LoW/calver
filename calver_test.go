@@ -18,7 +18,7 @@ func TestString(t *testing.T) {
 	}{
 		{"YYYY.0M.0D", "2002.02.04"},
 		{"0Y.0M.MICRO", "02.02.3"},
-		{"0Y.0W.MICROMODIFIER", "02.06.3-dev"},
+		{"0Y.0W.MICRO-MODIFIER", "02.06.3-dev"},
 		{"MAJOR.MINOR.MICRO", "1.2.3"},
 	}
 	for _, tt := range tests {
@@ -31,7 +31,7 @@ func TestString(t *testing.T) {
 			cv.major = 1
 			cv.minor = 2
 			cv.micro = 3
-			cv.modifier = "-dev"
+			cv.modifier = "dev"
 
 			got := cv.String()
 			if got != tt.want {
@@ -205,6 +205,39 @@ func TestParse(t *testing.T) {
 	}
 }
 
+func TestTrimSuffix(t *testing.T) {
+	tests := []struct {
+		layout     string
+		trimSuffix bool
+		version    string
+		want       string
+	}{
+		{"YY.0M.MICRO", false, "23.05.0", "23.05.0"},
+		{"YY.0M-MODIFIER", false, "23.05-dev", "23.05-dev"},
+		{"YY.0M.MICRO", true, "23.05.0", "23.05"},
+		{"YY.0M-MODIFIER", true, "23.05-", "23.05"},
+		{"YY.0M-MODIFIER", true, "23.05", "23.05"},
+		{"YY.0M.MAJOR.MINOR.MICRO", true, "23.05.1", "23.05.1"},
+	}
+	for _, tt := range tests {
+		t.Run(fmt.Sprintf("%s/%v/%s", tt.layout, tt.trimSuffix, tt.version), func(t *testing.T) {
+			cv, err := New(tt.layout)
+			if err != nil {
+				t.Error(err)
+			}
+			cv = cv.TrimSuffix(tt.trimSuffix)
+			gotcv, err := cv.Parse(tt.version)
+			if err != nil {
+				t.Error(err)
+			}
+			got := gotcv.String()
+			if got != tt.want {
+				t.Errorf("got %v\nwant %v", got, tt.want)
+			}
+		})
+	}
+
+}
 func TestLatest(t *testing.T) {
 	tests := []struct {
 		layout   string
