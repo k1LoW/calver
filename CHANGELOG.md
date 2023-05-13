@@ -1,5 +1,8 @@
 # Changelog
 
+## [v0.6.0](https://github.com/k1LoW/calver/compare/v0.5.1...v0.6.0) - 2023-05-13
+- Support for trimming the trailing version of a zero value or an empty string. by @k1LoW in https://github.com/k1LoW/calver/pull/18
+
 ## [v0.5.1](https://github.com/k1LoW/calver/compare/v0.5.0...v0.5.1) - 2023-05-13
 - Fix sort logic by @k1LoW in https://github.com/k1LoW/calver/pull/15
 - Fix error handling of layout by @k1LoW in https://github.com/k1LoW/calver/pull/17
