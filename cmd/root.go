@@ -68,10 +68,6 @@ var rootCmd = &cobra.Command{
 			}
 		}
 
-		if len(versions) == 0 && (next || major || minor || micro) {
-			return errors.New("--next, --major, --minor, and --micro require a version string to be parsed")
-		}
-
 		var errs error
 		if len(versions) > 0 {
 			cvs := calver.Calvers{}
