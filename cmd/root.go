@@ -48,6 +48,18 @@ var rootCmd = &cobra.Command{
 	Long:         `calver is a tool for manipulating calender versioning.`,
 	SilenceUsage: true,
 	Version:      version.Version,
+	Args: func(cmd *cobra.Command, args []string) error {
+		enabled := []bool{}
+		for _, f := range []bool{next, major, minor, micro} {
+			if f {
+				enabled = append(enabled, f)
+			}
+		}
+		if len(enabled) > 1 {
+			return errors.New("only one of --next, --major, --minor, --micro can be enabled")
+		}
+		return nil
+	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		cv, err := calver.New(layout)
 		if err != nil {
