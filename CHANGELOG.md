@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.5.1](https://github.com/k1LoW/calver/compare/v0.5.0...v0.5.1) - 2023-05-13
+- Fix sort logic by @k1LoW in https://github.com/k1LoW/calver/pull/15
+- Fix error handling of layout by @k1LoW in https://github.com/k1LoW/calver/pull/17
+
 ## [v0.5.0](https://github.com/k1LoW/calver/compare/v0.4.0...v0.5.0) - 2023-05-12
 - Add Sort() and Latest() by @k1LoW in https://github.com/k1LoW/calver/pull/12
 - Parse multi versions and use latest by @k1LoW in https://github.com/k1LoW/calver/pull/13
