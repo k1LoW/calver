@@ -86,6 +86,15 @@ func TestTokenizeLayout(t *testing.T) {
 		{"YY.0D.MICRO", []token{tYY, newTokenSep("."), t0D, newTokenSep("."), tMICRO}, false},
 		{"YYYY.0M.MICRO", []token{tYYYY, newTokenSep("."), t0M, newTokenSep("."), tMICRO}, false},
 		{"YYY", []token{tYY, newTokenSep("Y")}, false},
+		{"YY.0Y", nil, true},
+		{"YYYY.YYYY", nil, true},
+		{"MM.0M", nil, true},
+		{"WW.0W", nil, true},
+		{"DD.0D", nil, true},
+		{"MAJOR.MAJOR", nil, true},
+		{"MINOR.MINOR", nil, true},
+		{"MICRO.MICRO", nil, true},
+		{"MODIFIER.MODIFIER", nil, true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.layout, func(t *testing.T) {
