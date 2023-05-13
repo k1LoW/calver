@@ -36,6 +36,17 @@ $ calver --layout YY.0M.MICRO | calver --layout YY.0M.MICRO --next
 23.5.1
 ```
 
+#### Example: Generate version like Ubuntu
+
+``` console
+$ date
+Tue May  9 13:04:09 UTC 2023
+$ calver --layout YY.0M.MICRO --trim-suffix
+2023.05
+$ calver --layout YY.0M.MICRO --trim-suffix | calver --layout YY.0M.MICRO --trim-suffix --next
+2023.05.1
+```
+
 #### Example: Get latest version and generate next version
 
 ``` console
@@ -52,10 +63,7 @@ v1.0.1
 2023.03.0
 v1.0.0
 2023.02.0
-v0.0.4
-v0.0.3
-v0.0.2
-v0.0.1
+v0.1.0
 $ gh release list | cut -f 1 | calver --layout YY.0M.MICRO
 2023.05.1
 $ gh release list | cut -f 1 | calver --layout YY.0M.MICRO --next
