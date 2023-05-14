@@ -98,7 +98,7 @@ func TestNextWithTime(t *testing.T) {
 		wantErr bool
 	}{
 		{"0Y.0M.MICRO", testtime, "02.02.4", false},
-		{"0Y.0W.MICROMODIFIER", testtime, "02.06.4-dev", false},
+		{"0Y.0W.MICRO-MODIFIER", testtime, "02.06.4", false},
 		{"0Y.0M.MINOR", testtime, "02.02.3", false},
 		{"YYYY.0M.0D", testtime, "", true},
 		{"YYYY.0M.0D", testtime.AddDate(0, 0, 1), "2002.02.05", false},
@@ -114,7 +114,8 @@ func TestNextWithTime(t *testing.T) {
 			cv.major = 1
 			cv.minor = 2
 			cv.micro = 3
-			cv.modifier = "-dev"
+			cv.modifier = "dev"
+			cv.trimSuffix = true
 
 			got, err := cv.NextWithTime(tt.now)
 			if err != nil {
