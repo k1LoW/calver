@@ -202,8 +202,50 @@ func Parse(layout, value string) (*Calver, error) {
 func (cv *Calver) String() string {
 	var s string
 	reversed := reverse(cv.layout)
-	trimable := cv.trimSuffix
+	base := []token{}
+	mods := []token{}
+	contain := true
 	for _, t := range reversed {
+		switch tt := t.(type) {
+		case tokenSep:
+			if contain {
+				mods = append(mods, tt)
+			} else {
+				base = append(base, t)
+			}
+		default:
+			if contain && tt.token() == tMODIFIER.token() {
+				mods = append(mods, t)
+			} else {
+				base = append(base, t)
+				contain = false
+			}
+		}
+	}
+
+	// modifier suffix
+	trimable := cv.trimSuffix
+	for _, t := range mods {
+		switch tt := t.(type) {
+		case tokenCal:
+			panic("invalid logic")
+		case tokenVer:
+			v := tt.verToString(cv.major, cv.minor, cv.micro, cv.modifier)
+			if trimable && (v == "0" || v == "") {
+				v = ""
+			} else {
+				trimable = false
+			}
+			s = v + s
+		case tokenSep:
+			if !trimable {
+				s = tt.String() + s
+			}
+		}
+	}
+	// base
+	trimable = cv.trimSuffix
+	for _, t := range base {
 		switch tt := t.(type) {
 		case tokenCal:
 			trimable = false

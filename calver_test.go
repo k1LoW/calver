@@ -219,17 +219,21 @@ func TestTrimSuffix(t *testing.T) {
 		{"YY.0M-MODIFIER", true, "23.05-", "23.05"},
 		{"YY.0M-MODIFIER", true, "23.05", "23.05"},
 		{"YY.0M.MAJOR.MINOR.MICRO", true, "23.05.1", "23.05.1"},
+		{"YY.0M.MICRO-MODIFIER", true, "23.05.0-dev", "23.05-dev"},
+		// TODO: {"YY.0M.MICRO-MODIFIER", true, "23.05-dev", "23.05-dev"},
 	}
 	for _, tt := range tests {
 		t.Run(fmt.Sprintf("%s/%v/%s", tt.layout, tt.trimSuffix, tt.version), func(t *testing.T) {
 			cv, err := New(tt.layout)
 			if err != nil {
 				t.Error(err)
+				return
 			}
 			cv = cv.TrimSuffix(tt.trimSuffix)
 			gotcv, err := cv.Parse(tt.version)
 			if err != nil {
 				t.Error(err)
+				return
 			}
 			got := gotcv.String()
 			if got != tt.want {
