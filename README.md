@@ -47,6 +47,17 @@ $ calver --layout YY.0M.MICRO --trim-suffix | calver --layout YY.0M.MICRO --trim
 2023.05.1
 ```
 
+#### Example: Use modifier
+
+``` console
+$ date
+Tue May  9 13:04:09 UTC 2023
+$ calver --layout YY.0M.MICRO-MODIFIER --trim-suffix --modifier dev
+2023.05.0-dev
+$ calver 23.05.0-dev --layout YY.0M.MICRO-MODIFIER --trim-suffix --next
+2023.05.1
+```
+
 #### Example: Get latest version and generate next version
 
 ``` console
