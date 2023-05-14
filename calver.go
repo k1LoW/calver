@@ -293,10 +293,13 @@ func (cv *Calver) Micro() (*Calver, error) {
 }
 
 // Modifier returns *Calver with modifier.
-func (cv *Calver) Modifier(m string) *Calver {
+func (cv *Calver) Modifier(m string) (*Calver, error) {
+	if !contains(cv.layout, tMODIFIER) {
+		return nil, fmt.Errorf("no 'MODIFIER' in the layout '%s'", cv.Layout())
+	}
 	ncv := cv.clone()
 	ncv.modifier = m
-	return ncv
+	return ncv, nil
 }
 
 // TrimSuffix returns *Calver enabled/diabled to trim the trailing version of a zero value or an empty string.
