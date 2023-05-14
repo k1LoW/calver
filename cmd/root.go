@@ -40,6 +40,7 @@ var (
 	major      bool
 	minor      bool
 	micro      bool
+	modifier   string
 	trimSuffix bool
 )
 
@@ -122,6 +123,13 @@ var rootCmd = &cobra.Command{
 			}
 		}
 
+		mcv, err := cv.Modifier(modifier)
+		if err == nil {
+			cv = mcv
+		} else if modifier != "" {
+			return err
+		}
+
 		fmt.Println(cv.String())
 		return nil
 	},
@@ -140,5 +148,6 @@ func init() {
 	rootCmd.Flags().BoolVarP(&major, "major", "", false, "show next major version of parsed version")
 	rootCmd.Flags().BoolVarP(&minor, "minor", "", false, "show next minor version of parsed version")
 	rootCmd.Flags().BoolVarP(&micro, "micro", "", false, "show next micro version of parsed version")
+	rootCmd.Flags().StringVarP(&modifier, "modifier", "", "", "set modifier to parsed version")
 	rootCmd.Flags().BoolVarP(&trimSuffix, "trim-suffix", "", false, "trim the trailing version of a zero value or an empty string")
 }

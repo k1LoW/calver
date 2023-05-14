@@ -241,11 +241,16 @@ func (cv *Calver) Next() (*Calver, error) {
 }
 
 // Next returns next version *Calver at the given time.
-func (cv *Calver) NextWithTime(now time.Time) (*Calver, error) {
+func (cv *Calver) NextWithTime(now time.Time) (ncv *Calver, err error) {
+	defer func() {
+		if ncv != nil {
+			ncv.modifier = "" // clear modifier
+		}
+	}()
 	if cv.ts.UnixNano() > now.UnixNano() {
 		return nil, fmt.Errorf("[%v] is older than the current setting (%v)", now.Truncate(0), cv.ts)
 	}
-	ncv := cv.clone()
+	ncv = cv.clone()
 	ncv.ts = now
 	if cv.String() != ncv.String() {
 		return ncv, nil
@@ -293,10 +298,13 @@ func (cv *Calver) Micro() (*Calver, error) {
 }
 
 // Modifier returns *Calver with modifier.
-func (cv *Calver) Modifier(m string) *Calver {
+func (cv *Calver) Modifier(m string) (*Calver, error) {
+	if !contains(cv.layout, tMODIFIER) {
+		return nil, fmt.Errorf("no 'MODIFIER' in the layout '%s'", cv.Layout())
+	}
 	ncv := cv.clone()
 	ncv.modifier = m
-	return ncv
+	return ncv, nil
 }
 
 // TrimSuffix returns *Calver enabled/diabled to trim the trailing version of a zero value or an empty string.
