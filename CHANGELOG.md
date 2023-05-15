@@ -1,5 +1,7 @@
 # Changelog
 
+## [v0.7.1](https://github.com/k1LoW/calver/compare/v0.7.0...v0.7.1) - 2023-05-15
+
 ## [v0.7.0](https://github.com/k1LoW/calver/compare/v0.6.0...v0.7.0) - 2023-05-15
 - Add `--modifier` by @k1LoW in https://github.com/k1LoW/calver/pull/20
 - Trim trailing zero value version even with modifier set. by @k1LoW in https://github.com/k1LoW/calver/pull/22
