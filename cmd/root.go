@@ -123,11 +123,11 @@ var rootCmd = &cobra.Command{
 			}
 		}
 
-		mcv, err := cv.Modifier(modifier)
-		if err == nil {
-			cv = mcv
-		} else if modifier != "" {
-			return err
+		if modifier != "" {
+			cv, err = cv.Modifier(modifier)
+			if err != nil {
+				return err
+			}
 		}
 
 		fmt.Println(cv.String())
