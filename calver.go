@@ -69,12 +69,38 @@ func (cv *Calver) Parse(value string) (ncv *Calver, err error) {
 	year := parsedDefaultYear
 	month := parsedDefaultMonth
 	day := parsedDefaultDay
+	reversed := reverse(cv.layout)
+	base := []token{}
+	mods := []token{}
+
+	if cv.trimSuffix {
+		contain := true
+		for _, t := range reversed {
+			switch tt := t.(type) {
+			case tokenSep:
+				if contain {
+					mods = append([]token{t}, mods...)
+				} else {
+					base = append([]token{t}, base...)
+				}
+			default:
+				if contain && tt.token() == tMODIFIER.token() {
+					mods = append([]token{t}, mods...)
+				} else {
+					base = append([]token{t}, base...)
+					contain = false
+				}
+			}
+		}
+	} else {
+		base = cv.layout
+	}
 
 	var (
 		p    string
 		week int
 	)
-	for _, t := range cv.layout {
+	for _, t := range base {
 		switch {
 		case contains([]token{tYYYY, tYY, t0Y}, t):
 			p, value, err = t.trimPrefix(value)
@@ -121,10 +147,15 @@ func (cv *Calver) Parse(value string) (ncv *Calver, err error) {
 				ncv.major = 0
 				continue
 			}
-			p, value, err = t.trimPrefix(value)
+			var trimed string
+			p, trimed, err = t.trimPrefix(value)
 			if err != nil {
+				if cv.trimSuffix && len(mods) > 0 {
+					break
+				}
 				return nil, err
 			}
+			value = trimed
 			m, err := strconv.Atoi(p)
 			if err != nil {
 				return nil, err
@@ -135,10 +166,15 @@ func (cv *Calver) Parse(value string) (ncv *Calver, err error) {
 				ncv.minor = 0
 				continue
 			}
-			p, value, err = t.trimPrefix(value)
+			var trimed string
+			p, trimed, err = t.trimPrefix(value)
 			if err != nil {
+				if cv.trimSuffix && len(mods) > 0 {
+					break
+				}
 				return nil, err
 			}
+			value = trimed
 			m, err := strconv.Atoi(p)
 			if err != nil {
 				return nil, err
@@ -149,10 +185,15 @@ func (cv *Calver) Parse(value string) (ncv *Calver, err error) {
 				ncv.micro = 0
 				continue
 			}
-			p, value, err = t.trimPrefix(value)
+			var trimed string
+			p, trimed, err = t.trimPrefix(value)
 			if err != nil {
+				if cv.trimSuffix && len(mods) > 0 {
+					break
+				}
 				return nil, err
 			}
+			value = trimed
 			m, err := strconv.Atoi(p)
 			if err != nil {
 				return nil, err
@@ -172,10 +213,14 @@ func (cv *Calver) Parse(value string) (ncv *Calver, err error) {
 			if value == "" && cv.trimSuffix {
 				continue
 			}
-			_, value, err = t.trimPrefix(value)
+			_, trimed, err := t.trimPrefix(value)
 			if err != nil {
+				if cv.trimSuffix && len(mods) > 0 {
+					break
+				}
 				return nil, err
 			}
+			value = trimed
 		}
 	}
 	if week > 0 {
@@ -183,6 +228,32 @@ func (cv *Calver) Parse(value string) (ncv *Calver, err error) {
 	}
 	// Initialize (zeronize) hour and below when parsing
 	ncv.ts = time.Date(year, month, day, 0, 0, 0, 0, cv.loc)
+
+	if value != "" && cv.trimSuffix {
+		for _, t := range mods {
+			switch {
+			case contains([]token{tMODIFIER}, t):
+				if value == "" && cv.trimSuffix {
+					ncv.modifier = ""
+					continue
+				}
+				p, value, err = t.trimPrefix(value)
+				if err != nil {
+					return nil, err
+				}
+				ncv.modifier = p
+			default:
+				if value == "" && cv.trimSuffix {
+					continue
+				}
+				_, value, err = t.trimPrefix(value)
+				if err != nil {
+					return nil, err
+				}
+			}
+		}
+	}
+
 	if value != "" {
 		return nil, errors.New("there are strings that could not be parsed")
 	}
@@ -202,22 +273,23 @@ func Parse(layout, value string) (*Calver, error) {
 func (cv *Calver) String() string {
 	var s string
 	reversed := reverse(cv.layout)
-	base := []token{}
-	mods := []token{}
+	rbase := []token{}
+	rmods := []token{}
+
 	contain := true
 	for _, t := range reversed {
 		switch tt := t.(type) {
 		case tokenSep:
 			if contain {
-				mods = append(mods, tt)
+				rmods = append(rmods, tt)
 			} else {
-				base = append(base, t)
+				rbase = append(rbase, t)
 			}
 		default:
 			if contain && tt.token() == tMODIFIER.token() {
-				mods = append(mods, t)
+				rmods = append(rmods, t)
 			} else {
-				base = append(base, t)
+				rbase = append(rbase, t)
 				contain = false
 			}
 		}
@@ -225,7 +297,7 @@ func (cv *Calver) String() string {
 
 	// modifier suffix
 	trimable := cv.trimSuffix
-	for _, t := range mods {
+	for _, t := range rmods {
 		switch tt := t.(type) {
 		case tokenCal:
 			panic("invalid logic")
@@ -245,7 +317,7 @@ func (cv *Calver) String() string {
 	}
 	// base
 	trimable = cv.trimSuffix
-	for _, t := range base {
+	for _, t := range rbase {
 		switch tt := t.(type) {
 		case tokenCal:
 			trimable = false
