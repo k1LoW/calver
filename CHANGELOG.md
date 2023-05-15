@@ -1,5 +1,11 @@
 # Changelog
 
+## [v0.7.0](https://github.com/k1LoW/calver/compare/v0.6.0...v0.7.0) - 2023-05-15
+- Add `--modifier` by @k1LoW in https://github.com/k1LoW/calver/pull/20
+- Trim trailing zero value version even with modifier set. by @k1LoW in https://github.com/k1LoW/calver/pull/22
+- Support for parsing value with `--trim-suffix` by @k1LoW in https://github.com/k1LoW/calver/pull/23
+- Fix for modifier by @k1LoW in https://github.com/k1LoW/calver/pull/24
+
 ## [v0.6.0](https://github.com/k1LoW/calver/compare/v0.5.1...v0.6.0) - 2023-05-13
 - Support for trimming the trailing version of a zero value or an empty string. by @k1LoW in https://github.com/k1LoW/calver/pull/18
 
