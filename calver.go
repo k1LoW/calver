@@ -369,6 +369,9 @@ func (cv *Calver) NextWithTime(now time.Time) (ncv *Calver, err error) {
 	if cv.String() != ncv.String() {
 		return ncv, nil
 	}
+	if ncv.modifier != "" {
+		return ncv, nil
+	}
 	if contains(cv.layout, tMICRO) {
 		return cv.Micro()
 	}
