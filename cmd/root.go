@@ -79,7 +79,12 @@ var rootCmd = &cobra.Command{
 			}
 			lines := strings.Split(strings.Trim(string(stdin), " \n"), "\n")
 			for _, l := range lines {
-				versions = append(versions, strings.Split(l, " ")...)
+				splited := strings.Split(l, " ")
+				for _, ll := range splited {
+					if ll != "" {
+						versions = append(versions, ll)
+					}
+				}
 			}
 		}
 
