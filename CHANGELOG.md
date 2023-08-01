@@ -1,5 +1,8 @@
 # Changelog
 
+## [v0.7.2](https://github.com/k1LoW/calver/compare/v0.7.1...v0.7.2) - 2023-08-01
+- If the time version is updated in the next version and the first token in the layout is the time version, reset the major/minor/micro version. by @k1LoW in https://github.com/k1LoW/calver/pull/26
+
 ## [v0.7.1](https://github.com/k1LoW/calver/compare/v0.7.0...v0.7.1) - 2023-05-15
 
 ## [v0.7.0](https://github.com/k1LoW/calver/compare/v0.6.0...v0.7.0) - 2023-05-15
