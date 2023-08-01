@@ -367,19 +367,26 @@ func (cv *Calver) NextWithTime(now time.Time) (ncv *Calver, err error) {
 	ncv = cv.clone()
 	ncv.ts = now
 	if cv.String() != ncv.String() {
+		// if the time version is different and time version is first in the layout, reset major/minor/micro version.
+		if IsTimeVersionFirst(ncv.layout) {
+			ncv.major = 0
+			ncv.minor = 0
+			ncv.micro = 0
+		}
 		return ncv, nil
 	}
 	if ncv.modifier != "" {
+		// if the modifier is set, no need to bump up major/minor/micro version.
 		return ncv, nil
 	}
-	if contains(cv.layout, tMICRO) {
-		return cv.Micro()
+	if contains(ncv.layout, tMICRO) {
+		return ncv.Micro()
 	}
-	if contains(cv.layout, tMINOR) {
-		return cv.Minor()
+	if contains(ncv.layout, tMINOR) {
+		return ncv.Minor()
 	}
-	if contains(cv.layout, tMAJOR) {
-		return cv.Major()
+	if contains(ncv.layout, tMAJOR) {
+		return ncv.Major()
 	}
 	return nil, errors.New("failed to bump up version")
 }
@@ -471,6 +478,21 @@ func (cvs Calvers) Latest() (*Calver, error) {
 	}
 	cvs.Sort()
 	return cvs[0], nil
+}
+
+// IsTimeVersionFirst returns true if the time version is first in the layout.
+func IsTimeVersionFirst(layout []token) bool {
+	return contains([]token{
+		tYYYY,
+		tYY,
+		t0Y,
+		tMM,
+		t0M,
+		tWW,
+		t0W,
+		tDD,
+		t0D,
+	}, layout[0])
 }
 
 func contains(layout []token, t token) bool {
