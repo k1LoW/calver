@@ -104,6 +104,8 @@ func TestNextWithTime(t *testing.T) {
 		{"YYYY.0M.0D", testtime, "", "", true},
 		{"YYYY.0M.0D", testtime.AddDate(0, 0, 1), "", "2002.02.05", false},
 		{"0Y.0W.MICRO-MODIFIER", testtime, "dev", "02.06.3", false},
+		{"0Y.0M.MICRO", testtime.AddDate(0, 1, 0), "", "02.03", false},
+		{"MAJOR.0Y.0M", testtime.AddDate(0, 1, 0), "", "1.02.03", false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.layout, func(t *testing.T) {
