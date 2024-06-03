@@ -36,6 +36,7 @@ builds:
       - linux
     goarch:
       - amd64
+      - arm64
     main: ./cmd/calver/main.go
 archives:
   -
@@ -49,7 +50,6 @@ archives:
       - CREDITS
       - README.md
       - CHANGELOG.md
-    rlcp: true
 checksum:
   name_template: 'checksums.txt'
 snapshot:
