@@ -1,5 +1,8 @@
 # Changelog
 
+## [v0.7.4](https://github.com/k1LoW/calver/compare/v0.7.3...v0.7.4) - 2025-10-23
+- chore: setup tagpr labels by @k1LoW in https://github.com/k1LoW/calver/pull/31
+
 ## [v0.7.3](https://github.com/k1LoW/calver/compare/v0.7.2...v0.7.3) - 2024-06-03
 - Add Linux arm64 by @k1LoW in https://github.com/k1LoW/calver/pull/29
 
