@@ -1,5 +1,10 @@
 # Changelog
 
+## [v0.7.4](https://github.com/k1LoW/calver/compare/v0.7.3...v0.7.4) - 2026-01-13
+- chore: setup tagpr labels by @k1LoW in https://github.com/k1LoW/calver/pull/31
+- chore(deps): bump the dependencies group with 3 updates by @dependabot[bot] in https://github.com/k1LoW/calver/pull/33
+- chore(deps): bump the dependencies group across 1 directory with 3 updates by @dependabot[bot] in https://github.com/k1LoW/calver/pull/35
+
 ## [v0.7.3](https://github.com/k1LoW/calver/compare/v0.7.2...v0.7.3) - 2024-06-03
 - Add Linux arm64 by @k1LoW in https://github.com/k1LoW/calver/pull/29
 
