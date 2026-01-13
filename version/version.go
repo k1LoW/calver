@@ -2,4 +2,4 @@ package version
 
 const Name string = "calver"
 
-var Version = "0.7.4"
+var Version = "1.0.0"
