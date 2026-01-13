@@ -1,6 +1,7 @@
 package calver
 
 import (
+	"errors"
 	"fmt"
 	"testing"
 	"time"
@@ -334,5 +335,161 @@ func TestLatest(t *testing.T) {
 				t.Errorf("%s", diff)
 			}
 		})
+	}
+}
+
+func TestMajor(t *testing.T) {
+	tests := []struct {
+		layout  string
+		wantErr bool
+	}{
+		{"MAJOR.MINOR.MICRO", false},
+		{"YYYY.0M.0D", true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.layout, func(t *testing.T) {
+			cv, err := New(tt.layout)
+			if err != nil {
+				t.Error(err)
+				return
+			}
+			cv.major = 1
+			got, err := cv.Major()
+			if err != nil {
+				if !tt.wantErr {
+					t.Errorf("got error: %v", err)
+				}
+				return
+			}
+			if tt.wantErr {
+				t.Error("want error")
+			}
+			if got.major != 2 {
+				t.Errorf("got %v\nwant %v", got.major, 2)
+			}
+		})
+	}
+}
+
+func TestModifier(t *testing.T) {
+	tests := []struct {
+		layout   string
+		modifier string
+		wantErr  bool
+	}{
+		{"YYYY.0M.MICRO-MODIFIER", "dev", false},
+		{"YYYY.0M.0D", "dev", true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.layout, func(t *testing.T) {
+			cv, err := New(tt.layout)
+			if err != nil {
+				t.Error(err)
+				return
+			}
+			got, err := cv.Modifier(tt.modifier)
+			if err != nil {
+				if !tt.wantErr {
+					t.Errorf("got error: %v", err)
+				}
+				return
+			}
+			if tt.wantErr {
+				t.Error("want error")
+			}
+			if got.modifier != tt.modifier {
+				t.Errorf("got %v\nwant %v", got.modifier, tt.modifier)
+			}
+		})
+	}
+}
+
+func TestSort(t *testing.T) {
+	tests := []struct {
+		layout   string
+		versions []string
+		want     []string
+	}{
+		{
+			"YYYY.0M.MICRO",
+			[]string{"2012.12.1", "2012.12.0", "2012.12.2"},
+			[]string{"2012.12.2", "2012.12.1", "2012.12.0"},
+		},
+		{
+			"MAJOR.MINOR.MICRO",
+			[]string{"1.0.0", "1.1.0", "1.0.1"},
+			[]string{"1.1.0", "1.0.1", "1.0.0"},
+		},
+		{
+			"YYYY.0M.MICROMODIFIER",
+			[]string{"2012.12.0-dev", "2012.12.0"},
+			[]string{"2012.12.0", "2012.12.0-dev"},
+		},
+	}
+	for i, tt := range tests {
+		t.Run(fmt.Sprintf("%d", i), func(t *testing.T) {
+			cvs := Calvers{}
+			cv, err := New(tt.layout)
+			if err != nil {
+				t.Error(err)
+			}
+			for _, v := range tt.versions {
+				ccv, err := cv.Parse(v)
+				if err == nil {
+					cvs = append(cvs, ccv)
+				}
+			}
+			cvs.Sort()
+			for i, want := range tt.want {
+				if cvs[i].String() != want {
+					t.Errorf("got %v\nwant %v", cvs[i].String(), want)
+				}
+			}
+		})
+	}
+}
+
+func TestLatestEmpty(t *testing.T) {
+	cvs := Calvers{}
+	_, err := cvs.Latest()
+	if err == nil {
+		t.Error("want error")
+	}
+	if !errors.Is(err, ErrNoVersions) {
+		t.Errorf("got %v\nwant %v", err, ErrNoVersions)
+	}
+}
+
+func TestNextWithTimeOlderError(t *testing.T) {
+	cv, err := NewWithTime("YYYY.0M.MICRO", testtime)
+	if err != nil {
+		t.Error(err)
+	}
+	older := testtime.AddDate(0, 0, -1)
+	_, err = cv.NextWithTime(older)
+	if err == nil {
+		t.Error("want error")
+	}
+}
+
+func TestMinorError(t *testing.T) {
+	cv, err := New("YYYY.0M.0D")
+	if err != nil {
+		t.Error(err)
+	}
+	_, err = cv.Minor()
+	if err == nil {
+		t.Error("want error")
+	}
+}
+
+func TestMicroError(t *testing.T) {
+	cv, err := New("YYYY.0M.0D")
+	if err != nil {
+		t.Error(err)
+	}
+	_, err = cv.Micro()
+	if err == nil {
+		t.Error("want error")
 	}
 }
