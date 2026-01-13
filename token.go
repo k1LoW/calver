@@ -24,11 +24,11 @@ type tokenCal struct {
 	timeToString func(time.Time) string
 }
 
-func (t tokenCal) token() string {
+func (t tokenCal) String() string {
 	return t.t
 }
 
-func (t tokenCal) String() string {
+func (t tokenCal) token() string {
 	return t.t
 }
 
@@ -53,11 +53,11 @@ type tokenVer struct {
 	verToString func(int, int, int, string) string
 }
 
-func (t tokenVer) token() string {
+func (t tokenVer) String() string {
 	return t.t
 }
 
-func (t tokenVer) String() string {
+func (t tokenVer) token() string {
 	return t.t
 }
 
@@ -82,11 +82,11 @@ func newTokenSep(token string) tokenSep {
 	return tokenSep{t: token}
 }
 
-func (t tokenSep) token() string {
+func (t tokenSep) String() string {
 	return t.t
 }
 
-func (t tokenSep) String() string {
+func (t tokenSep) token() string {
 	return t.t
 }
 
@@ -180,28 +180,28 @@ func tokenizeLayout(layout string) ([]token, error) {
 		}
 	}
 	if !lessThanOneContains(tokens, []token{tYYYY, tYY, t0Y}) {
-		return nil, fmt.Errorf("Only one of %v, %v, %v can be included in the layout", tYYYY, tYY, t0Y)
+		return nil, fmt.Errorf("only one of %v, %v, %v can be included in the layout", tYYYY, tYY, t0Y)
 	}
 	if !lessThanOneContains(tokens, []token{tMM, t0M}) {
-		return nil, fmt.Errorf("Only one of %v, %v can be included in the layout", tMM, t0M)
+		return nil, fmt.Errorf("only one of %v, %v can be included in the layout", tMM, t0M)
 	}
 	if !lessThanOneContains(tokens, []token{tWW, t0W}) {
-		return nil, fmt.Errorf("Only one of %v, %v can be included in the layout", tWW, t0W)
+		return nil, fmt.Errorf("only one of %v, %v can be included in the layout", tWW, t0W)
 	}
 	if !lessThanOneContains(tokens, []token{tDD, t0D}) {
-		return nil, fmt.Errorf("Only one of %v, %v can be included in the layout", tDD, t0D)
+		return nil, fmt.Errorf("only one of %v, %v can be included in the layout", tDD, t0D)
 	}
 	if !lessThanOneContains(tokens, []token{tMAJOR}) {
-		return nil, fmt.Errorf("Only one %v can be included in the layout", tMAJOR)
+		return nil, fmt.Errorf("only one %v can be included in the layout", tMAJOR)
 	}
 	if !lessThanOneContains(tokens, []token{tMINOR}) {
-		return nil, fmt.Errorf("Only one %v can be included in the layout", tMINOR)
+		return nil, fmt.Errorf("only one %v can be included in the layout", tMINOR)
 	}
 	if !lessThanOneContains(tokens, []token{tMICRO}) {
-		return nil, fmt.Errorf("Only one %v can be included in the layout", tMICRO)
+		return nil, fmt.Errorf("only one %v can be included in the layout", tMICRO)
 	}
 	if !lessThanOneContains(tokens, []token{tMODIFIER}) {
-		return nil, fmt.Errorf("Only one %v can be included in the layout", tMODIFIER)
+		return nil, fmt.Errorf("only one %v can be included in the layout", tMODIFIER)
 	}
 
 	return tokens, nil

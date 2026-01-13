@@ -1,50 +1,62 @@
 name: tagpr
+
 on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   tagpr:
     runs-on: ubuntu-latest
     outputs:
       tagpr-tag: ${{ steps.run-tagpr.outputs.tag }}
+    permissions:
+      contents: write
+      pull-requests: write
+      packages: write
+      issues: read
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Check out source code
-        uses: actions/checkout@v4
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
       - name: Set up Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@4dc6199c7b1a012772edbd06daecab0f50c9053c # v6.1.0
         with:
           go-version-file: go.mod
 
       - id: run-tagpr
         name: Run tagpr
-        uses: Songmu/tagpr@v1
+        uses: Songmu/tagpr@0a9ef64ad975dce30c6fb2547f9e1ac89b5f1f76 # v1.11.0
 
-  release:
+  assets:
     needs: tagpr
     if: needs.tagpr.outputs.tagpr-tag != ''
     runs-on: macos-latest
+    permissions:
+      contents: write
+      packages: write
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Check out source code
-        uses: actions/checkout@v4
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           fetch-depth: 0
 
       - name: Set up Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@4dc6199c7b1a012772edbd06daecab0f50c9053c # v6.1.0
         with:
           go-version-file: go.mod
+          cache: true
 
-      - name: Setup
-        run: |
-          brew install goreleaser
-
-      - name: Release
-        run: |
-          make release
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@e435ccd777264be153ace6237001ef4d979d3a7a # v6.4.0
+        with:
+          distribution: goreleaser
+          version: latest
+          args: --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

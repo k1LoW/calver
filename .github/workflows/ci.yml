@@ -12,20 +12,28 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write
     steps:
       - name: Check out source code
-        uses: actions/checkout@v3
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
 
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@7b8cf10d4e4a01d4992d18a89f4d7dc5a3e6d6f4 # v4.3.0
         with:
           go-version-file: go.mod
 
       - name: Run lint
-        uses: golangci/golangci-lint-action@v2
+        uses: reviewdog/action-golangci-lint@f9bba13753278f6a73b27a56a3ffb1bfda90ed71 # v2.8.0
+        with:
+          fail_level: error
+          go_version_file: go.mod
+          cache: false
 
       - name: Run tests
         run: make ci
 
       - name: Run octocov
-        uses: k1LoW/octocov-action@v0
+        uses: k1LoW/octocov-action@73d561f65d59e66899ed5c87e4621a913b5d5c20 # v1.5.0
