@@ -1,3 +1,4 @@
+version: 2
 before:
   hooks:
     - go mod download
@@ -42,20 +43,20 @@ archives:
   -
     id: calver-archive
     name_template: '{{ .ProjectName }}_v{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}'
-    format_overrides:
-      - goos: darwin
-        format: zip
     files:
       - LICENSE
       - CREDITS
       - README.md
       - CHANGELOG.md
+    format_overrides:
+      - goos: darwin
+        formats:
+          - zip
 checksum:
   name_template: 'checksums.txt'
 snapshot:
-  name_template: "{{ .Version }}-next"
+  version_template: "{{ .Version }}-next"
 changelog:
-  skip: true
   sort: asc
   filters:
     exclude:
@@ -65,8 +66,6 @@ nfpms:
   -
     id: calver-nfpms
     file_name_template: "{{ .ProjectName }}_{{ .Version }}-1_{{ .Arch }}"
-    builds:
-      - calver-linux
     homepage: https://github.com/k1LoW/calver
     maintainer: Ken'ichiro Oyama <k1lowxb@gmail.com>
     description: calver is a tool for manipulating calender versioning.
@@ -77,3 +76,5 @@ nfpms:
       - apk
     bindir: /usr/bin
     epoch: 1
+release:
+  use_existing_draft: true
