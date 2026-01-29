@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.0.1](https://github.com/k1LoW/calver/compare/v1.0.0...v1.0.1) - 2026-01-29
+- chore(deps): bump the dependencies group with 2 updates by @dependabot[bot] in https://github.com/k1LoW/calver/pull/37
+- feat: support parsing variable-length tokens followed by fixed-length  tokens by @k1LoW in https://github.com/k1LoW/calver/pull/39
+
 ## [v1.0.0](https://github.com/k1LoW/calver/compare/v0.7.4...v1.0.0) - 2026-01-13
 
 ## [v0.7.4](https://github.com/k1LoW/calver/compare/v0.7.3...v0.7.4) - 2026-01-13
