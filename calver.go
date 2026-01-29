@@ -100,10 +100,23 @@ func (cv *Calver) Parse(value string) (ncv *Calver, err error) {
 		p    string
 		week int
 	)
-	for _, t := range base {
+	for i, t := range base {
+		// Calculate max length for current token based on subsequent tokens' requirements
+		minLenAfter := minLenUntilNextSep(base, i)
+		maxLen := 0
+		if minLenAfter > 0 {
+			// Find the length of value until the next separator
+			sep := nextSepToken(base, i)
+			lenUntilSep := lengthUntilSep(value, sep)
+			maxLen = lenUntilSep - minLenAfter
+			if maxLen < 1 {
+				maxLen = 1
+			}
+		}
+
 		switch {
 		case contains([]token{tYYYY, tYY, t0Y}, t):
-			p, value, err = t.trimPrefix(value)
+			p, value, err = t.trimPrefixWithMaxLen(value, maxLen)
 			if err != nil {
 				return nil, err
 			}
@@ -115,7 +128,7 @@ func (cv *Calver) Parse(value string) (ncv *Calver, err error) {
 				year += 2000
 			}
 		case contains([]token{tMM, t0M}, t):
-			p, value, err = t.trimPrefix(value)
+			p, value, err = t.trimPrefixWithMaxLen(value, maxLen)
 			if err != nil {
 				return nil, err
 			}
@@ -125,7 +138,7 @@ func (cv *Calver) Parse(value string) (ncv *Calver, err error) {
 			}
 			month = time.Month(m)
 		case contains([]token{tWW, t0W}, t):
-			p, value, err = t.trimPrefix(value)
+			p, value, err = t.trimPrefixWithMaxLen(value, maxLen)
 			if err != nil {
 				return nil, err
 			}
@@ -134,7 +147,7 @@ func (cv *Calver) Parse(value string) (ncv *Calver, err error) {
 				return nil, err
 			}
 		case contains([]token{tDD, t0D}, t):
-			p, value, err = t.trimPrefix(value)
+			p, value, err = t.trimPrefixWithMaxLen(value, maxLen)
 			if err != nil {
 				return nil, err
 			}
@@ -510,4 +523,39 @@ func reverse(layout []token) []token {
 		reversed = append([]token{t}, reversed...)
 	}
 	return reversed
+}
+
+// minLenUntilNextSep calculates the minimum length required by tokens from index+1 until the next separator.
+func minLenUntilNextSep(tokens []token, index int) int {
+	minLen := 0
+	for i := index + 1; i < len(tokens); i++ {
+		if _, ok := tokens[i].(tokenSep); ok {
+			break
+		}
+		minLen += tokens[i].minLen()
+	}
+	return minLen
+}
+
+// nextSepToken returns the next separator token after the given index, or empty string if none found.
+func nextSepToken(tokens []token, index int) string {
+	for i := index + 1; i < len(tokens); i++ {
+		if sep, ok := tokens[i].(tokenSep); ok {
+			return sep.token()
+		}
+	}
+	return ""
+}
+
+// lengthUntilSep returns the length of value until the given separator, or the full length if separator not found.
+func lengthUntilSep(value, sep string) int {
+	if sep == "" {
+		return len(value)
+	}
+	for i := 0; i < len(value); i++ {
+		if len(value[i:]) >= len(sep) && value[i:i+len(sep)] == sep {
+			return i
+		}
+	}
+	return len(value)
 }
