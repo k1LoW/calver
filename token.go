@@ -10,6 +10,8 @@ import (
 type token interface {
 	token() string
 	trimPrefix(value string) (prefix string, trimed string, err error)
+	trimPrefixWithMaxLen(value string, maxLen int) (prefix string, trimed string, err error)
+	minLen() int
 	String() string
 }
 
@@ -33,10 +35,19 @@ func (t tokenCal) token() string {
 }
 
 func (t tokenCal) trimPrefix(value string) (string, string, error) {
+	return t.trimPrefixWithMaxLen(value, 0)
+}
+
+func (t tokenCal) trimPrefixWithMaxLen(value string, maxLen int) (string, string, error) {
 	l := len(t.t)
 	var expr string
 	if l == 2 && !strings.HasPrefix(t.t, "0") {
-		expr = "^([1-9][0-9]?)(.*)$"
+		// Variable length token (MM, DD, WW, YY)
+		if maxLen > 0 && maxLen < 2 {
+			expr = "^([1-9])(.*)$"
+		} else {
+			expr = "^([1-9][0-9]?)(.*)$"
+		}
 	} else {
 		expr = fmt.Sprintf("^([0-9]{%d})(.*)$", l)
 	}
@@ -46,6 +57,16 @@ func (t tokenCal) trimPrefix(value string) (string, string, error) {
 		return "", "", fmt.Errorf("could not get the value of token '%s' from '%s'", t.t, value)
 	}
 	return matches[0][1], matches[0][2], nil
+}
+
+func (t tokenCal) minLen() int {
+	l := len(t.t)
+	// Variable length tokens (MM, DD, WW, YY) have minimum length of 1
+	if l == 2 && !strings.HasPrefix(t.t, "0") {
+		return 1
+	}
+	// Fixed length tokens (YYYY, 0M, 0D, 0W, 0Y)
+	return l
 }
 
 type tokenVer struct {
@@ -62,16 +83,32 @@ func (t tokenVer) token() string {
 }
 
 func (t tokenVer) trimPrefix(value string) (string, string, error) {
+	return t.trimPrefixWithMaxLen(value, 0)
+}
+
+func (t tokenVer) trimPrefixWithMaxLen(value string, maxLen int) (string, string, error) {
 	if t.t == "MODIFIER" {
 		return value, "", nil
 	}
-	expr := "^([0-9]+)(.*)$"
+	var expr string
+	if maxLen > 0 {
+		expr = fmt.Sprintf("^([0-9]{1,%d})(.*)$", maxLen)
+	} else {
+		expr = "^([0-9]+)(.*)$"
+	}
 	re := regexp.MustCompile(expr)
 	matches := re.FindAllStringSubmatch(value, -1)
 	if len(matches) == 0 {
 		return "", "", fmt.Errorf("could not get the value of token '%s' from '%s'", t.t, value)
 	}
 	return matches[0][1], matches[0][2], nil
+}
+
+func (t tokenVer) minLen() int {
+	if t.t == "MODIFIER" {
+		return 0
+	}
+	return 1
 }
 
 type tokenSep struct {
@@ -91,10 +128,18 @@ func (t tokenSep) token() string {
 }
 
 func (t tokenSep) trimPrefix(value string) (string, string, error) {
+	return t.trimPrefixWithMaxLen(value, 0)
+}
+
+func (t tokenSep) trimPrefixWithMaxLen(value string, maxLen int) (string, string, error) {
 	if !strings.HasPrefix(value, t.t) {
 		return "", "", fmt.Errorf("could not get the value of token '%s' from '%s'", t.t, value)
 	}
 	return t.t, strings.TrimPrefix(value, t.t), nil
+}
+
+func (t tokenSep) minLen() int {
+	return len(t.t)
 }
 
 var (

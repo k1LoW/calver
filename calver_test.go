@@ -186,6 +186,22 @@ func TestParse(t *testing.T) {
 			},
 			false,
 		},
+		{
+			"YYYY.MMDD.MICRO", "2026.123.0",
+			&Calver{
+				micro: 0,
+				ts:    time.Date(2026, time.Month(12), 3, 0, 0, 0, 0, time.UTC),
+			},
+			false,
+		},
+		{
+			"YYYY.MM0D.MICRO", "2026.123.0",
+			&Calver{
+				micro: 0,
+				ts:    time.Date(2026, time.Month(1), 23, 0, 0, 0, 0, time.UTC),
+			},
+			false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(fmt.Sprintf("%s/%s", tt.layout, tt.value), func(t *testing.T) {
