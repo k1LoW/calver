@@ -1,5 +1,13 @@
 # Changelog
 
+## [v1.0.2](https://github.com/k1LoW/calver/compare/v1.0.1...v1.0.2) - 2026-03-31
+- chore(deps): bump Songmu/tagpr from 1.12.1 to 1.15.0 in the dependencies group by @dependabot[bot] in https://github.com/k1LoW/calver/pull/40
+- chore(deps): bump Songmu/tagpr from 1.15.0 to 1.17.0 in the dependencies group by @dependabot[bot] in https://github.com/k1LoW/calver/pull/42
+- chore(deps): bump goreleaser/goreleaser-action from 6.4.0 to 7.0.0 in the dependencies group by @dependabot[bot] in https://github.com/k1LoW/calver/pull/43
+- chore(deps): bump the dependencies group with 2 updates by @dependabot[bot] in https://github.com/k1LoW/calver/pull/44
+- chore(deps): bump reviewdog/action-golangci-lint from 2.8.0 to 2.10.0 in the dependencies group by @dependabot[bot] in https://github.com/k1LoW/calver/pull/45
+- chore(deps): bump actions/setup-go from 6.3.0 to 6.4.0 in the dependencies group by @dependabot[bot] in https://github.com/k1LoW/calver/pull/46
+
 ## [v1.0.1](https://github.com/k1LoW/calver/compare/v1.0.0...v1.0.1) - 2026-01-29
 - chore(deps): bump the dependencies group with 2 updates by @dependabot[bot] in https://github.com/k1LoW/calver/pull/37
 - feat: support parsing variable-length tokens followed by fixed-length  tokens by @k1LoW in https://github.com/k1LoW/calver/pull/39
