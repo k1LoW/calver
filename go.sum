@@ -6,8 +6,8 @@ github.com/inconshreveable/mousetrap v1.1.0/go.mod h1:vpF70FUmC8bwa3OWnCshd2FqLf
 github.com/mattn/go-isatty v0.0.21 h1:xYae+lCNBP7QuW4PUnNG61ffM4hVIfm+zUzDuSzYLGs=
 github.com/mattn/go-isatty v0.0.21/go.mod h1:ZXfXG4SQHsB/w3ZeOYbR0PrPwLy+n6xiMrJlRFqopa4=
 github.com/russross/blackfriday/v2 v2.1.0/go.mod h1:+Rmxgy9KzJVeS9/2gXHxylqXiyQDYRxCVz55jmeOWTM=
-github.com/snabb/isoweek v1.0.3 h1:BwEULUhj7UToLLa7FivDTLzA4y1epTYkLhnn31huBRs=
-github.com/snabb/isoweek v1.0.3/go.mod h1:J5hJfY1CG56xmKCC/4XfoaWZcOiB+qntmyKEDATSnlw=
+github.com/snabb/isoweek v1.1.0 h1:d2tfLwvu0kjsLq61QalnhFfsyP56Yqig0akG7rL4X8g=
+github.com/snabb/isoweek v1.1.0/go.mod h1:3VcRgy1SZw/ksr4UVaOhtg6HL1aYEz8Ht0mQrA19DYM=
 github.com/spf13/cobra v1.10.2 h1:DMTTonx5m65Ic0GOoRY2c16WCbHxOOw6xxezuLaBpcU=
 github.com/spf13/cobra v1.10.2/go.mod h1:7C1pvHqHw5A4vrJfjNwvOdzYu0Gml16OCs2GRiTUUS4=
 github.com/spf13/pflag v1.0.9 h1:9exaQaMOCwffKiiiYk6/BndUBv+iRViNW+4lEMi0PvY=
