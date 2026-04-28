@@ -1,5 +1,20 @@
 # Changelog
 
+## [v1.0.2](https://github.com/k1LoW/calver/compare/v1.0.1...v1.0.2) - 2026-04-28
+- chore(deps): bump Songmu/tagpr from 1.12.1 to 1.15.0 in the dependencies group by @dependabot[bot] in https://github.com/k1LoW/calver/pull/40
+- chore(deps): bump Songmu/tagpr from 1.15.0 to 1.17.0 in the dependencies group by @dependabot[bot] in https://github.com/k1LoW/calver/pull/42
+- chore(deps): bump goreleaser/goreleaser-action from 6.4.0 to 7.0.0 in the dependencies group by @dependabot[bot] in https://github.com/k1LoW/calver/pull/43
+- chore(deps): bump the dependencies group with 2 updates by @dependabot[bot] in https://github.com/k1LoW/calver/pull/44
+- chore(deps): bump reviewdog/action-golangci-lint from 2.8.0 to 2.10.0 in the dependencies group by @dependabot[bot] in https://github.com/k1LoW/calver/pull/45
+- chore(deps): bump actions/setup-go from 6.3.0 to 6.4.0 in the dependencies group by @dependabot[bot] in https://github.com/k1LoW/calver/pull/46
+- chore(deps): bump Songmu/tagpr from 1.17.1 to 1.18.1 in the dependencies group by @dependabot[bot] in https://github.com/k1LoW/calver/pull/47
+- chore(deps): bump Songmu/tagpr from 1.18.1 to 1.18.2 in the dependencies group by @dependabot[bot] in https://github.com/k1LoW/calver/pull/48
+- chore(deps): bump github.com/mattn/go-isatty from 0.0.20 to 0.0.21 in the dependencies group by @dependabot[bot] in https://github.com/k1LoW/calver/pull/49
+- chore(deps): bump the dependencies group with 2 updates by @dependabot[bot] in https://github.com/k1LoW/calver/pull/50
+- chore(deps): bump github.com/snabb/isoweek from 1.0.3 to 1.1.0 in the dependencies group by @dependabot[bot] in https://github.com/k1LoW/calver/pull/51
+- chore(deps): bump the dependencies group with 2 updates by @dependabot[bot] in https://github.com/k1LoW/calver/pull/53
+- chore(deps): bump the dependencies group with 2 updates by @dependabot[bot] in https://github.com/k1LoW/calver/pull/52
+
 ## [v1.0.1](https://github.com/k1LoW/calver/compare/v1.0.0...v1.0.1) - 2026-01-29
 - chore(deps): bump the dependencies group with 2 updates by @dependabot[bot] in https://github.com/k1LoW/calver/pull/37
 - feat: support parsing variable-length tokens followed by fixed-length  tokens by @k1LoW in https://github.com/k1LoW/calver/pull/39
