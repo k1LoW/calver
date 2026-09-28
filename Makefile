@@ -25,14 +25,17 @@ build:
 	go build -ldflags="$(BUILD_LDFLAGS)" -o calver cmd/calver/main.go
 
 depsdev:
-	go install github.com/Songmu/gocredits/cmd/gocredits@latest
 
-prerelease_for_tagpr: depsdev
-	gocredits . -w
+credits:
+	go install github.com/Songmu/gocredits/cmd/gocredits@v1.0.0
+	gocredits . > CREDITS
+
+prerelease_for_tagpr:
+	$(MAKE) credits
 	git add CHANGELOG.md CREDITS go.mod go.sum
 
 release:
 	git push origin main --tag
 	goreleaser --clean
 
-.PHONY: default test
+.PHONY: default test credits
