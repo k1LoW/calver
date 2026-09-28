@@ -4,7 +4,7 @@ go 1.24
 
 require (
 	github.com/google/go-cmp v0.7.0
-	github.com/mattn/go-isatty v0.0.23
+	github.com/mattn/go-isatty v0.0.24
 	github.com/snabb/isoweek v1.1.1
 	github.com/spf13/cobra v1.10.2
 )
