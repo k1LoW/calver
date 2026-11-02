@@ -227,6 +227,161 @@ func TestParse(t *testing.T) {
 	}
 }
 
+func TestWeekVersions(t *testing.T) {
+	tests := []struct {
+		date     string
+		current  string
+		wantNew  string
+		wantNext string
+	}{
+		{"2001-12-31", "2001.52.8", "2002.01.0", "2002.01.0"},
+		{"2025-12-29", "2025.52.8", "2026.01.0", "2026.01.0"},
+		{"2025-12-30", "2026.01.0", "2026.01.0", "2026.01.1"},
+		{"2026-01-02", "2026.01.1", "2026.01.0", "2026.01.2"},
+		{"2026-01-05", "2026.01.2", "2026.02.0", "2026.02.0"},
+		{"2026-12-28", "2026.52.8", "2026.53.0", "2026.53.0"},
+		{"2027-01-01", "2026.53.0", "2026.53.0", "2026.53.1"},
+		{"2027-01-02", "2026.53.1", "2026.53.0", "2026.53.2"},
+		{"2027-01-04", "2026.53.2", "2027.01.0", "2027.01.0"},
+	}
+	for _, yearToken := range []string{"YYYY", "YY", "0Y"} {
+		for _, weekToken := range []string{"WW", "0W"} {
+			layout := yearToken + "." + weekToken + ".MICRO"
+			version := func(value string) string {
+				var year, week, micro int
+				if _, err := fmt.Sscanf(value, "%d.%d.%d", &year, &week, &micro); err != nil {
+					t.Fatal(err)
+				}
+				yearString := fmt.Sprintf("%04d", year)
+				if yearToken == "YY" {
+					yearString = fmt.Sprintf("%d", year-2000)
+				}
+				if yearToken == "0Y" {
+					year -= 2000
+					yearString = fmt.Sprintf("%02d", year)
+				}
+				if weekToken == "0W" {
+					return fmt.Sprintf("%s.%02d.%d", yearString, week, micro)
+				}
+				return fmt.Sprintf("%s.%d.%d", yearString, week, micro)
+			}
+			for _, tt := range tests {
+				t.Run(layout+"/"+tt.date, func(t *testing.T) {
+					now, err := time.Parse("2006-01-02", tt.date)
+					if err != nil {
+						t.Fatal(err)
+					}
+					generated, err := NewWithTime(layout, now)
+					if err != nil {
+						t.Fatal(err)
+					}
+					if got, want := generated.String(), version(tt.wantNew); got != want {
+						t.Fatalf("generated = %s, want %s", got, want)
+					}
+					parsed, err := Parse(layout, generated.String())
+					if err != nil {
+						t.Fatal(err)
+					}
+					if got := parsed.String(); got != generated.String() {
+						t.Fatalf("round trip = %s, want %s", got, generated.String())
+					}
+					current, err := Parse(layout, version(tt.current))
+					if err != nil {
+						t.Fatal(err)
+					}
+					next, err := current.NextWithTime(now)
+					if err != nil {
+						t.Fatal(err)
+					}
+					if got, want := next.String(), version(tt.wantNext); got != want {
+						t.Fatalf("next = %s, want %s", got, want)
+					}
+					next, err = Parse(layout, next.String())
+					if err != nil {
+						t.Fatal(err)
+					}
+					latest, err := (Calvers{current, next}).Latest()
+					if err != nil {
+						t.Fatal(err)
+					}
+					if got, want := latest.String(), version(tt.wantNext); got != want {
+						t.Fatalf("latest = %s, want %s", got, want)
+					}
+				})
+			}
+		}
+	}
+}
+
+func TestParseInvalidWeek(t *testing.T) {
+	for _, value := range []string{"2026.00.0", "2025.53.0", "2026.54.0", "2027.53.0"} {
+		t.Run(value, func(t *testing.T) {
+			if _, err := Parse("YYYY.0W.MICRO", value); err == nil {
+				t.Fatal("want error for invalid ISO week")
+			}
+		})
+	}
+}
+
+func TestWeekVersionIn(t *testing.T) {
+	now := time.Date(2025, 12, 29, 0, 0, 0, 0, time.UTC)
+	cv, err := NewWithTime("YYYY.0W.MICRO", now)
+	if err != nil {
+		t.Fatal(err)
+	}
+	loc := time.FixedZone("UTC-2", -2*60*60)
+	cv = cv.In(loc)
+	if got := cv.String(); got != "2025.52.0" {
+		t.Fatalf("got %s, want 2025.52.0", got)
+	}
+	parsed, err := cv.Parse(cv.String())
+	if err != nil {
+		t.Fatal(err)
+	}
+	next, err := parsed.NextWithTime(now.Add(2 * time.Hour))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := next.String(); got != "2026.01.0" {
+		t.Fatalf("got %s, want 2026.01.0", got)
+	}
+}
+
+func TestCalendarYearVersions(t *testing.T) {
+	tests := []struct {
+		layout string
+		date   string
+		want   string
+	}{
+		{"YYYY.0M.0D", "2025-12-29", "2025.12.29"},
+		{"YY.0M.0D", "2025-12-29", "25.12.29"},
+		{"0Y.0M.0D", "2027-01-01", "27.01.01"},
+		{"YYYY.0M.MICRO", "2027-01-01", "2027.01.0"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.layout+"/"+tt.date, func(t *testing.T) {
+			now, err := time.Parse("2006-01-02", tt.date)
+			if err != nil {
+				t.Fatal(err)
+			}
+			cv, err := NewWithTime(tt.layout, now)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if got := cv.String(); got != tt.want {
+				t.Fatalf("got %s, want %s", got, tt.want)
+			}
+			parsed, err := Parse(tt.layout, cv.String())
+			if err != nil {
+				t.Fatal(err)
+			}
+			if got := parsed.String(); got != tt.want {
+				t.Fatalf("round trip = %s, want %s", got, tt.want)
+			}
+		})
+	}
+}
+
 func TestTrimSuffix(t *testing.T) {
 	tests := []struct {
 		layout     string

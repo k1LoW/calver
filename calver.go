@@ -236,7 +236,10 @@ func (cv *Calver) Parse(value string) (ncv *Calver, err error) {
 			value = trimed
 		}
 	}
-	if week > 0 {
+	if contains(cv.layout, tWW) || contains(cv.layout, t0W) {
+		if !isoweek.Validate(year, week) {
+			return nil, fmt.Errorf("invalid ISO week %d for year %d", week, year)
+		}
 		year, month, day = isoweek.StartDate(year, week)
 	}
 	// Initialize (zeronize) hour and below when parsing
@@ -334,7 +337,12 @@ func (cv *Calver) String() string {
 		switch tt := t.(type) {
 		case tokenCal:
 			trimable = false
-			s = tt.timeToString(cv.ts.In(cv.loc)) + s
+			ts := cv.ts.In(cv.loc)
+			if contains([]token{tYYYY, tYY, t0Y}, tt) && (contains(cv.layout, tWW) || contains(cv.layout, t0W)) {
+				year, _ := ts.ISOWeek()
+				ts = time.Date(year, time.January, 1, 0, 0, 0, 0, cv.loc)
+			}
+			s = tt.timeToString(ts) + s
 		case tokenVer:
 			v := tt.verToString(cv.major, cv.minor, cv.micro, cv.modifier)
 			if trimable && (v == "0" || v == "") {

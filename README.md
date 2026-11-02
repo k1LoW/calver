@@ -81,6 +81,23 @@ $ gh release list | cut -f 1 | calver --layout YY.0M.MICRO --next
 2023.05.2
 ```
 
+### Week-based versions
+
+When a layout includes `WW` or `0W`, its year token (`YYYY`, `YY`, or `0Y`) uses
+the ISO week-numbering year, not the calendar year. For example, `YYYY.0W.MICRO`
+generates `2026.01.0` on December 29, 2025 and `2026.53.0` on January 1, 2027.
+Parsing preserves these versions, and subsequent releases in the same ISO week
+increment `MICRO`.
+
+Week tokens cannot be combined with month (`MM`, `0M`) or day (`DD`, `0D`) tokens.
+Invalid ISO weeks, including week 53 in a year with only 52 weeks, are rejected.
+Layouts without week tokens continue to use calendar years.
+
+Previously, week-based layouts generated calendar years alongside ISO week
+numbers. Existing tags created near New Year may therefore need review before
+upgrading: a valid year/week pair is now interpreted as an ISO week date, and an
+invalid pair is rejected rather than normalized.
+
 ## Install
 
 ### As a package
