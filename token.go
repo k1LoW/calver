@@ -233,6 +233,13 @@ func tokenizeLayout(layout string) ([]token, error) {
 	if !lessThanOneContains(tokens, []token{tWW, t0W}) {
 		return nil, fmt.Errorf("only one of %v, %v can be included in the layout", tWW, t0W)
 	}
+	if contains(tokens, tWW) || contains(tokens, t0W) {
+		for _, t := range []token{tMM, t0M, tDD, t0D} {
+			if contains(tokens, t) {
+				return nil, fmt.Errorf("week tokens cannot be combined with month or day tokens in the layout '%s'", layout)
+			}
+		}
+	}
 	if !lessThanOneContains(tokens, []token{tDD, t0D}) {
 		return nil, fmt.Errorf("only one of %v, %v can be included in the layout", tDD, t0D)
 	}
