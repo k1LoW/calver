@@ -323,6 +323,66 @@ func TestParseInvalidWeek(t *testing.T) {
 	}
 }
 
+func TestWeekVersionsWithoutYear(t *testing.T) {
+	tests := []struct {
+		layout   string
+		date     string
+		current  string
+		wantNew  string
+		wantNext string
+	}{
+		{"WW.MICRO", "2026-12-28", "52.3", "53.0", "53.0"},
+		{"WW.MICRO", "2027-01-01", "53.0", "53.0", "53.1"},
+		{"WW.MICRO", "2027-01-04", "53.1", "1.0", "1.0"},
+		{"0W.MICRO", "2026-12-28", "52.3", "53.0", "53.0"},
+		{"0W.MICRO", "2027-01-01", "53.0", "53.0", "53.1"},
+		{"0W.MICRO", "2027-01-04", "53.1", "01.0", "01.0"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.layout+"/"+tt.date, func(t *testing.T) {
+			now, err := time.Parse("2006-01-02", tt.date)
+			if err != nil {
+				t.Fatal(err)
+			}
+			generated, err := NewWithTime(tt.layout, now)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if got := generated.String(); got != tt.wantNew {
+				t.Fatalf("generated = %s, want %s", got, tt.wantNew)
+			}
+			parsed, err := Parse(tt.layout, generated.String())
+			if err != nil {
+				t.Fatal(err)
+			}
+			if got := parsed.String(); got != tt.wantNew {
+				t.Fatalf("round trip = %s, want %s", got, tt.wantNew)
+			}
+			current, err := Parse(tt.layout, tt.current)
+			if err != nil {
+				t.Fatal(err)
+			}
+			next, err := current.NextWithTime(now)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if got := next.String(); got != tt.wantNext {
+				t.Fatalf("next = %s, want %s", got, tt.wantNext)
+			}
+		})
+	}
+}
+
+func TestParseInvalidWeekWithoutYear(t *testing.T) {
+	for _, value := range []string{"00.0", "54.0"} {
+		t.Run(value, func(t *testing.T) {
+			if _, err := Parse("0W.MICRO", value); err == nil {
+				t.Fatal("want error for invalid ISO week")
+			}
+		})
+	}
+}
+
 func TestWeekVersionIn(t *testing.T) {
 	now := time.Date(2025, 12, 29, 0, 0, 0, 0, time.UTC)
 	cv, err := NewWithTime("YYYY.0W.MICRO", now)

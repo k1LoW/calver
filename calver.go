@@ -14,6 +14,9 @@ const (
 	parsedDefaultYear  = 2000
 	parsedDefaultMonth = time.Month(1)
 	parsedDefaultDay   = 1
+	// parsedDefaultYear has only 52 ISO weeks, so a layout without a year token
+	// could not parse week 53. 2004 is the first year after 2000 with 53 ISO weeks.
+	parsedDefaultISOWeekYear = 2004
 )
 
 type Calver struct {
@@ -237,6 +240,9 @@ func (cv *Calver) Parse(value string) (ncv *Calver, err error) {
 		}
 	}
 	if contains(cv.layout, tWW) || contains(cv.layout, t0W) {
+		if !contains(cv.layout, tYYYY) && !contains(cv.layout, tYY) && !contains(cv.layout, t0Y) {
+			year = parsedDefaultISOWeekYear
+		}
 		if !isoweek.Validate(year, week) {
 			return nil, fmt.Errorf("invalid ISO week %d for year %d", week, year)
 		}
